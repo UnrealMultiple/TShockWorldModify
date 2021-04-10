@@ -2,7 +2,6 @@
 
 /wm info，查看世界信息;
 /wm name <世界名>，修改世界名字;
-/wm mode <难度>，修改世界难度;
 /wm seed <种子>，修改世界种子;
 /wm 516，开启/关闭 05162020 秘密世界;
 /wm ftw，开启/关闭 for the worthy 秘密世界;
