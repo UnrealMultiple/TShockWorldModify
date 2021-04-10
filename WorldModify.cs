@@ -25,7 +25,9 @@ namespace Plugin
 
         public override void Initialize()
         {
-            Commands.ChatCommands.Add(new Command(new List<string>() { "worldmodify" }, WorldModify, "worldmodify", "wm"));
+            Commands.ChatCommands.Add(new Command(new List<string>() {"worldmodify"}, WorldModify, "worldmodify", "wm") { HelpText = "简易的世界修改器"});
+            Commands.ChatCommands.Add(new Command(new List<string>() {"moonphase"}, ChangeMoonPhase, "moonphase", "mp", "moon") { HelpText = "修改月相"});
+            Commands.ChatCommands.Add(new Command(new List<string>() {"moonstyle"}, ChangeMoonStyle, "moonstyle", "ms") { HelpText = "修改月亮样式"});
         }
 
 
@@ -81,119 +83,6 @@ namespace Plugin
                     break;
 
 
-                // 模式 ，经典/专家/大师/旅行
-                case "mode":
-                    if(args.Parameters.Count<string>()==1){
-                        args.Player.SendInfoMessage("世界难度: {0}", _worldModes.Keys.ElementAt(Main.GameMode));
-                        args.Player.SendInfoMessage("用法：/wm mode <难度>");
-                        args.Player.SendInfoMessage("可用的难度：{0}", String.Join(", ", _worldModes.Keys));
-                        return;
-                    }
-
-                    int mode;
-                    if (int.TryParse(args.Parameters[1], out mode))
-                    {
-                        if (mode < 1 || mode > 4)
-                        {
-                            args.Player.SendErrorMessage("语法错误！用法：/wm mode <难度>");
-                            args.Player.SendErrorMessage("可用的难度：{0}", String.Join(", ", _worldModes.Keys));
-                            return;
-                        }
-                    }
-                    else if (_worldModes.ContainsKey(args.Parameters[1]))
-                    {
-                        mode = _worldModes[args.Parameters[1]];
-                    }
-                    else
-                    {
-                        args.Player.SendErrorMessage("语法错误！用法：/wm mode <难度>");
-                        args.Player.SendErrorMessage("可用的难度：{0}", String.Join(", ", _worldModes.Keys));
-                        return;
-                    }
-
-                    Main.GameMode = mode-1;
-                    args.Player.SendSuccessMessage("世界模式已改成 {0}", _worldModes.Keys.ElementAt(mode-1));
-                    break;
-
-
-                // 月相
-                case "moon":
-                    if(args.Parameters.Count<string>()==1){
-                        args.Player.SendInfoMessage("当前月相: {0}", _moonPhases.Keys.ElementAt(Main.moonPhase));
-                        args.Player.SendInfoMessage("用法：/wm moon <月相>");
-                        args.Player.SendInfoMessage("月相：{0}", String.Join(", ", _moonPhases.Keys));
-                        return;
-                    }
-
-                    int moon;
-                    if (int.TryParse(args.Parameters[1], out moon))
-                    {
-                        if (moon < 1 || moon > 8)
-                        {
-                            args.Player.SendErrorMessage("语法错误！用法：/wm moon <月相>");
-                            args.Player.SendErrorMessage("月相：{0}", String.Join(", ", _moonPhases.Keys));
-                            return;
-                        }
-                    }
-                    else if (_moonPhases.ContainsKey(args.Parameters[1]))
-                    {
-                        moon = _moonPhases[args.Parameters[1]];
-                    }
-                    else
-                    {
-                        args.Player.SendErrorMessage("语法错误！用法：/wm moon <月相>");
-                        args.Player.SendErrorMessage("月相：{0}", String.Join(", ", _moonPhases.Keys));
-                        return;
-                    }
-
-                    Main.dayTime = false;
-                    Main.moonPhase = moon-1;
-                    Main.time = 0.0;
-                    TSPlayer.All.SendData(PacketTypes.WorldInfo);
-                    args.Player.SendSuccessMessage("月相已改为 {0}", _moonPhases.Keys.ElementAt(moon-1));
-                    break;
-
-
-                // 月亮样式
-                case "moonstyle":
-                case "ms":
-                case "moontype":
-                    if(args.Parameters.Count<string>()==1){
-                        args.Player.SendInfoMessage("当前月亮样式: {0}", _moonTypes.Keys.ElementAt(Main.moonType));
-                        args.Player.SendInfoMessage("用法：/wm moonstyle <月亮样式>");
-                        args.Player.SendInfoMessage("月亮样式：{0}", String.Join(", ", _moonTypes.Keys));
-                        return;
-                    }
-
-                    int moontype;
-                    if (int.TryParse(args.Parameters[1], out moontype))
-                    {
-                        if (moontype < 1 || moontype > 9)
-                        {
-                            args.Player.SendErrorMessage("语法错误！用法：/wm moonstyle <月亮样式>");
-                            args.Player.SendErrorMessage("月亮样式：{0}", String.Join(", ", _moonTypes.Keys));
-                            return;
-                        }
-                    }
-                    else if (_moonTypes.ContainsKey(args.Parameters[1]))
-                    {
-                        moontype = _moonTypes[args.Parameters[1]];
-                    }
-                    else
-                    {
-                        args.Player.SendErrorMessage("语法错误！用法：/wm moonstyle <月亮样式>");
-                        args.Player.SendErrorMessage("月亮样式：{0}", String.Join(", ", _moonTypes.Keys));
-                        return;
-                    }
-                    Main.dayTime = false;
-                    Main.moonType = moontype-1;
-                    Main.time = 0.0;
-                    TSPlayer.All.SendData(PacketTypes.WorldInfo);
-                    args.Player.SendSuccessMessage("月亮样式已改为 {0}", _moonTypes.Keys.ElementAt(moontype-1));
-                    break;
-
-
-
                 // 醉酒世界
                 case "0516":
                 case "05162020":
@@ -225,6 +114,83 @@ namespace Plugin
             }
         }
 
+
+        // 修改月相
+        private void ChangeMoonPhase(CommandArgs args)
+        {
+            if(args.Parameters.Count<string>()==0 || args.Parameters[0].ToLowerInvariant()=="help")
+            {
+                args.Player.SendInfoMessage("当前月相: {0}", _moonPhases.Keys.ElementAt(Main.moonPhase));
+                args.Player.SendInfoMessage("用法：/moon <月相>");
+                args.Player.SendInfoMessage("月相：{0} （可用数字 1~8 代替）", String.Join(", ", _moonPhases.Keys));
+                return;
+            }
+
+            int moon;
+            if (int.TryParse(args.Parameters[0], out moon))
+            {
+                if (moon < 1 || moon > 8)
+                {
+                    args.Player.SendErrorMessage("语法错误！用法：/moon <月相>");
+                    args.Player.SendErrorMessage("月相：{0} （可用数字 1~8 代替）", String.Join(", ", _moonPhases.Keys));
+                    return;
+                }
+            }
+            else if (_moonPhases.ContainsKey(args.Parameters[0]))
+            {
+                moon = _moonPhases[args.Parameters[0]];
+            }
+            else
+            {
+                args.Player.SendErrorMessage("语法错误！用法：/moon <月相>");
+                args.Player.SendErrorMessage("月相：{0} （可用数字 1~8 代替）", String.Join(", ", _moonPhases.Keys));
+                return;
+            }
+
+            Main.dayTime = false;
+            Main.moonPhase = moon-1;
+            Main.time = 0.0;
+            TSPlayer.All.SendData(PacketTypes.WorldInfo);
+            args.Player.SendSuccessMessage("月相已改为 {0}", _moonPhases.Keys.ElementAt(moon-1));
+        }
+
+        // 修改月亮样式
+        private void ChangeMoonStyle(CommandArgs args)
+        {
+            if(args.Parameters.Count<string>()==0){
+                args.Player.SendInfoMessage("当前月亮样式: {0}", _moonTypes.Keys.ElementAt(Main.moonType));
+                args.Player.SendInfoMessage("用法：/moonstyle <月亮样式>");
+                args.Player.SendInfoMessage("月亮样式：{0} （可用数字 1~9 代替）", String.Join(", ", _moonTypes.Keys));
+                return;
+            }
+
+            int moontype;
+            if (int.TryParse(args.Parameters[0], out moontype))
+            {
+                if (moontype < 1 || moontype > 9)
+                {
+                    args.Player.SendErrorMessage("语法错误！用法：/moonstyle <月亮样式>");
+                    args.Player.SendErrorMessage("月亮样式：{0} （可用数字 1~9 代替）", String.Join(", ", _moonTypes.Keys));
+                    return;
+                }
+            }
+            else if (_moonTypes.ContainsKey(args.Parameters[0]))
+            {
+                moontype = _moonTypes[args.Parameters[0]];
+            }
+            else
+            {
+                args.Player.SendErrorMessage("语法错误！用法：/moonstyle <月亮样式>");
+                args.Player.SendErrorMessage("月亮样式：{0} （可用数字 1~9 代替）", String.Join(", ", _moonTypes.Keys));
+                return;
+            }
+            Main.dayTime = false;
+            Main.moonType = moontype-1;
+            Main.time = 0.0;
+            TSPlayer.All.SendData(PacketTypes.WorldInfo);
+            args.Player.SendSuccessMessage("月亮样式已改为 {0}", _moonTypes.Keys.ElementAt(moontype-1));
+        }
+
         /// <summary>
         /// 帮助
         /// </summary>
@@ -232,13 +198,9 @@ namespace Plugin
         {
             args.Player.SendInfoMessage("/wm info，查看世界信息");
             args.Player.SendInfoMessage("/wm name <世界名>，修改世界名字");
-            args.Player.SendInfoMessage("/wm mode <难度>，修改世界难度");
-            //args.Player.SendInfoMessage("/wm size <小/中/大/微小>，修改世界大小");    //修改无效
             args.Player.SendInfoMessage("/wm seed <种子>，修改世界种子");
             args.Player.SendInfoMessage("/wm 516，开启/关闭 05162020 秘密世界");
             args.Player.SendInfoMessage("/wm ftw，开启/关闭 for the worthy 秘密世界");
-            args.Player.SendInfoMessage("/wm moon <月相>，修改月相");
-            args.Player.SendInfoMessage("/wm moonstyle <月亮样式>，修改月亮样式");
             args.Player.SendInfoMessage("/wm respawn，查询复活时间");
 
         }
