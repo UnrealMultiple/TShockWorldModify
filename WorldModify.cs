@@ -50,11 +50,14 @@ namespace Plugin
                 // 世界信息
                 case "info":
                     args.Player.SendInfoMessage("当前世界信息");
-                    args.Player.SendInfoMessage("名字: " + (TShock.Config.UseServerName ? TShock.Config.ServerName : Main.worldName));
+                    args.Player.SendInfoMessage("名字: {0}", Main.worldName);
                     args.Player.SendInfoMessage("大小: {0}", Main.ActiveWorldFileData.WorldSizeName);
                     args.Player.SendInfoMessage("难度: {0}", _worldModes.Keys.ElementAt(Main.GameMode));
                     args.Player.SendInfoMessage("种子: {0}", WorldGen.currentWorldSeed);
-                    args.Player.SendInfoMessage(this.GetSecretWorldDescription());
+                    if(this.GetSecretWorldDescription()!="")
+                    {
+                        args.Player.SendInfoMessage(this.GetSecretWorldDescription());
+                    }
                     args.Player.SendInfoMessage(this.GetCorruptionDescription());
                     args.Player.SendInfoMessage("困难模式: {0}", (Main.ActiveWorldFileData.IsHardMode ? "是" : "否"));
                     args.Player.SendInfoMessage("月相: {0}", _moonPhases.Keys.ElementAt(Main.moonPhase));
@@ -62,16 +65,10 @@ namespace Plugin
                     break;
 
 
-                // 复活时间
-                case "respawn":
-                case "fuhuo":
-                    args.Player.SendInfoMessage("复活时间: 普通 {0}s，Boss {1}s", TShock.Config.RespawnSeconds, TShock.Config.RespawnBossSeconds);
-                    break;
-
-
                 // 名字
                 case "name":
                     Main.worldName = args.Parameters[1];
+                    TSPlayer.All.SendData(PacketTypes.WorldInfo);
                     TSPlayer.All.SendSuccessMessage("世界的名字已改成 {0}", args.Parameters[1]);
                     break;
 
@@ -79,6 +76,7 @@ namespace Plugin
                 // 种子
                 case "seed":
                     Main.ActiveWorldFileData.SetSeed(args.Parameters[1]);
+                    TSPlayer.All.SendData(PacketTypes.WorldInfo);
                     TSPlayer.All.SendSuccessMessage("世界的种子已改成 {0}", args.Parameters[1]);
                     break;
 
@@ -91,9 +89,11 @@ namespace Plugin
                 case "drunk":
                     if (Main.drunkWorld) {
                         Main.drunkWorld = false;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
                         args.Player.SendSuccessMessage("已关闭 05162020 秘密世界（醉酒世界 / DrunkWorld）");
                     } else {
                         Main.drunkWorld = true;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
                         args.Player.SendSuccessMessage("已开启 05162020 秘密世界（醉酒世界 / DrunkWorld）");
                     }
                     break;
@@ -104,9 +104,11 @@ namespace Plugin
                 case "for the worthy":
                     if (Main.getGoodWorld) {
                         Main.getGoodWorld = false;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
                         args.Player.SendSuccessMessage("已关闭 for the worthy 秘密世界");
                     } else  {
                         Main.getGoodWorld = true;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
                         args.Player.SendSuccessMessage("已开启 for the worthy 秘密世界");
                     }
                     break;
@@ -199,9 +201,8 @@ namespace Plugin
             args.Player.SendInfoMessage("/wm info，查看世界信息");
             args.Player.SendInfoMessage("/wm name <世界名>，修改世界名字");
             args.Player.SendInfoMessage("/wm seed <种子>，修改世界种子");
-            args.Player.SendInfoMessage("/wm 516，开启/关闭 05162020 秘密世界");
+            args.Player.SendInfoMessage("/wm 0516，开启/关闭 05162020 秘密世界");
             args.Player.SendInfoMessage("/wm ftw，开启/关闭 for the worthy 秘密世界");
-            args.Player.SendInfoMessage("/wm respawn，查询复活时间");
 
         }
 
