@@ -6,6 +6,7 @@ using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
 using Terraria.GameContent.Creative;
+using System.Threading;
 
 namespace Plugin
 {
@@ -27,9 +28,10 @@ namespace Plugin
         public override void Initialize()
         {
             Commands.ChatCommands.Add(new Command(new List<string>() {"worldmodify"}, WorldModify, "worldmodify", "wm") { HelpText = "简易的世界修改器"});
-            Commands.ChatCommands.Add(new Command(new List<string>() {"moonphase"}, ChangeMoonPhase, "moonphase", "mp", "moon") { HelpText = "修改月相"});
-            Commands.ChatCommands.Add(new Command(new List<string>() {"moonstyle"}, ChangeMoonStyle, "moonstyle", "ms") { HelpText = "修改月亮样式"});
-            Commands.ChatCommands.Add(new Command(new List<string>() {"helper"}, helper, "helper") { HelpText = "额外的指令帮助"});
+            Commands.ChatCommands.Add(new Command(new List<string>() {"moonphase"}, ChangeMoonPhase, "moonphase", "mp", "moon") { HelpText = "月相管理"});
+            Commands.ChatCommands.Add(new Command(new List<string>() {"moonstyle"}, ChangeMoonStyle, "moonstyle", "ms") { HelpText = "月亮样式管理"});
+            Commands.ChatCommands.Add(new Command(new List<string>() {"bossmanage"}, BossManage, "bossmanage", "bm", "boss" ) { HelpText = "boss管理"});
+            Commands.ChatCommands.Add(new Command(new List<string>() {"npcManage"}, NpcManage, "npcmanage", "nm", "npc") { HelpText = "npc管理"});
         }
 
 
@@ -42,35 +44,32 @@ namespace Plugin
                 args.Player.SendInfoMessage("/wm id <id>，修改世界ID");
                 args.Player.SendInfoMessage("/wm seed <种子>，修改世界种子");
                 args.Player.SendInfoMessage("/wm 0516，开启/关闭 05162020 秘密世界");
+                args.Player.SendInfoMessage("/wm 05162021，开启/关闭 05162021 秘密世界");
                 args.Player.SendInfoMessage("/wm ftw，开启/关闭 for the worthy 秘密世界");
-                args.Player.SendInfoMessage("/wm boss，查看boss进度");
-                args.Player.SendInfoMessage("/wm npc，查看NPC解救情况");
-                args.Player.SendInfoMessage("/wm search, 解锁全物品研究（有待测试）");
-            }
-            string CFlag(bool foo){
-                if (foo)
-                    return "✔";
-                else
-                    return "";
+                args.Player.SendInfoMessage("/wm research, 解锁全物品研究");
+                args.Player.SendInfoMessage("/moon help,  月相管理");
+                args.Player.SendInfoMessage("/moonstyle help,  月亮样式管理");
+                args.Player.SendInfoMessage("/boss help, boss管理");
+                args.Player.SendInfoMessage("/npc help, npc管理");
             }
 
             if (args.Parameters.Count<string>() == 0)
             {
-                ShowHelpText();
+                args.Player.SendErrorMessage("语法错误，/wm help 可查询相关用法");
                 return;
             }
 
-            List<string> li1 = new List<string>();
-            List<string> li2 = new List<string>();
-            List<string> li3 = new List<string>();
-            List<string> li = new List<string>();
+
             switch (args.Parameters[0].ToLowerInvariant())
             {
                 // 帮助
-                default:
                 case "help":
                     ShowHelpText();
                     return;
+
+                default:
+                    args.Player.SendErrorMessage("语法不正确！");
+                    break;
 
                 // 世界信息
                 case "info":
@@ -126,6 +125,8 @@ namespace Plugin
                 case "05162020":
                 case "516":
                 case "5162020":
+                case "9":
+                case "2020":
                 case "drunk":
                     if (Main.drunkWorld) {
                         Main.drunkWorld = false;
@@ -135,6 +136,26 @@ namespace Plugin
                         Main.drunkWorld = true;
                         TSPlayer.All.SendData(PacketTypes.WorldInfo);
                         args.Player.SendSuccessMessage("已开启 05162020 秘密世界（醉酒世界 / DrunkWorld）");
+                    }
+                    break;
+                
+                // 10周年庆典,tenthAnniversaryWorld
+                case "5162021":
+                case "05162021":
+                case "5162011":
+                case "05162011":
+                case "10":
+                case "2011":
+                case "2021":
+                case "celebrationmk10":
+                    if (Main.tenthAnniversaryWorld) {
+                        Main.tenthAnniversaryWorld = false;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        args.Player.SendSuccessMessage("已关闭 05162021 秘密世界（10周年庆典）");
+                    } else {
+                        Main.tenthAnniversaryWorld = true;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        args.Player.SendSuccessMessage("已开启 05162021 秘密世界（10周年庆典）");
                     }
                     break;
 
@@ -152,113 +173,80 @@ namespace Plugin
                         args.Player.SendSuccessMessage("已开启 for the worthy 秘密世界");
                     }
                     break;
-                
-
-                // 查看boss进度
-                case "boss":
-                    li1.Add(CFlag(NPC.downedSlimeKing) + "史莱姆王");
-                    li1.Add(CFlag(NPC.downedBoss1) + "克苏鲁之眼");
-
-                    string boss2Name = "";
-                    if(Main.ActiveWorldFileData.HasCrimson && Main.ActiveWorldFileData.HasCorruption)
-                        boss2Name = "世界吞噬怪 或 克苏鲁之脑";
-                    else if(Main.ActiveWorldFileData.HasCrimson)
-                        boss2Name = "克苏鲁之脑";
-                    else if(Main.ActiveWorldFileData.HasCorruption)
-                        boss2Name = "世界吞噬怪";
-                    li1.Add(CFlag(NPC.downedBoss2) + boss2Name);
-
-                    li1.Add(CFlag(NPC.downedBoss3) + "骷髅王");
-                    li1.Add(CFlag(NPC.downedQueenBee) + "蜂王");
-                    li1.Add(CFlag(Main.hardMode) + "血肉墙");
-
-
-                    li2.Add(CFlag(NPC.downedMechBoss1) + "毁灭者");
-                    li2.Add(CFlag(NPC.downedMechBoss2) + "双子魔眼");
-                    li2.Add(CFlag(NPC.downedMechBoss3) + "机械骷髅王");
-
-                    li2.Add(CFlag(NPC.downedPlantBoss) + "世纪之花");
-                    li2.Add(CFlag(NPC.downedGolemBoss) + "石巨人");
-
-                    li2.Add(CFlag(NPC.downedQueenSlime) + "史莱姆皇后");
-                    li2.Add(CFlag(NPC.downedEmpressOfLight) + "光之女皇");
-                    
-                    li2.Add(CFlag(NPC.downedFishron) + "猪龙鱼公爵");
-                    li2.Add(CFlag(NPC.downedAncientCultist) + "拜月教邪教徒");
-                    li2.Add(CFlag(NPC.downedMoonlord) + "月亮领主");
-
-
-                    li3.Add(CFlag(NPC.downedClown) + "小丑");
-                    li3.Add(CFlag(NPC.downedGoblins) + "哥布林军队");
-                    li3.Add(CFlag(NPC.downedPirates) + "海盗入侵");
-                    li3.Add(CFlag(NPC.downedMartians) + "火星暴乱");
-
-                    li3.Add(CFlag(NPC.downedHalloweenTree) + "哀木");
-                    li3.Add(CFlag(NPC.downedHalloweenKing) + "南瓜王");
-
-                    li3.Add(CFlag(NPC.downedChristmasIceQueen) + "冰雪女王");
-                    li3.Add(CFlag(NPC.downedChristmasTree) + "常绿尖叫怪");
-                    li3.Add(CFlag(NPC.downedChristmasSantank) + "圣诞坦克");
-
-                    li3.Add(CFlag(NPC.downedTowerSolar) + "日耀柱");
-                    li3.Add(CFlag(NPC.downedTowerVortex) + "星旋柱");
-                    li3.Add(CFlag(NPC.downedTowerNebula) + "星云柱");
-                    li3.Add(CFlag(NPC.downedTowerStardust) + "星尘柱");
-
-
-                    args.Player.SendInfoMessage("肉前：{0}", String.Join(", ", li1));
-                    args.Player.SendInfoMessage("肉后：{0}", String.Join(", ", li2));
-                    args.Player.SendInfoMessage("事件：{0}", String.Join(", ", li3));
-                    break;
-
-                // 查看npc解救情况
-                case "npc":
-                    li = NPC.savedAngler ? li1 : li2;
-                    li.Add("渔夫");
-
-                    li = NPC.savedGoblin ? li1 : li2;
-                    li.Add("哥布林");
-
-                    li = NPC.savedMech ? li1 : li2;
-                    li.Add("机械师");
-
-                    li = NPC.savedStylist ? li1 : li2;
-                    li.Add("发型师");
-
-                    li = NPC.savedBartender ? li1 : li2;
-                    li.Add("酒馆老板");
-
-                    li = NPC.savedGolfer ? li1 : li2;
-                    li.Add("高尔夫球手");
-
-                    li = NPC.savedWizard ? li1 : li2;
-                    li.Add("巫师");
-
-                    li = NPC.savedTaxCollector ? li1 : li2;
-                    li.Add("税收官");
-
-                    if (li1.Count > 0)
-                        args.Player.SendInfoMessage("已解救：{0}", String.Join(", ", li1));
-                    if (li2.Count > 0 )
-                        args.Player.SendInfoMessage("待解救：{0}", String.Join(", ", li2));
-                    break;
 
 
                 // 全物品研究（有待测试）
                 case "research":
                     List<int> ids = CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId.Keys.ToList<int>();
+
+                    if( ids.Count>0 ){
+                        args.Player.SendInfoMessage("正在解锁，需要一点时间，请稍等……");
+                    }
+
                     int amountNeeded;
                     for (int i = 0; i < ids.Count; i++)
                     {
                         CreativeItemSacrificesCatalog.Instance.TryGetSacrificeCountCapToUnlockInfiniteItems(ids[i], out amountNeeded);
                         TShock.ResearchDatastore.SacrificeItem(ids[i], amountNeeded, args.Player);
                     }
-                    args.Player.SendInfoMessage("已解锁 {0} 个物品研究", ids.Count);
+                    args.Player.SendSuccessMessage("已解锁 {0} 个物品研究，重新开服可生效", ids.Count);
+                    args.Player.SendSuccessMessage("研究数据仅保存在服务器上，每张地图的研究数据是分开");
+                    TSPlayer.All.SendData(PacketTypes.PlayerInfo);
                     break;
+
+                
+                // 固定时间（测试用）
+                // case "day":
+                //     //定义线程
+                //     Thread LogThread = new Thread(new ThreadStart(DoService));
+                //     //设置线程为后台线程,那样进程里就不会有未关闭的程序了
+                //     LogThread.IsBackground = true;
+                //     if (bStop == false)
+                //     {
+                //         LogThread.Start();//起线程
+                //     }
+                //     break;
 
             }
         }
 
+
+        // public static bool bStop = false;
+        // private static void DoService()
+        // {
+        //     while (true)
+        //     {
+        //         bStop = false;
+        //         SendToService();
+        //         System.Threading.Thread.Sleep(1000*60*5);//1000=1秒
+        //     }
+        // }
+
+        // private static void SendToService()
+        // {
+        //     TSPlayer.Server.SetTime(true, 20000.0); //10:00
+        //     // TSPlayer.Server.SetTime(false, 0.0);
+
+		// 	// switch (args.Parameters[0].ToLower())
+		// 	// {
+		// 	// 	case "day":
+		// 	// 		TSPlayer.Server.SetTime(true, 0.0);
+		// 	// 		TSPlayer.All.SendInfoMessage("{0} set the time to 4:30.", args.Player.Name);
+		// 	// 		break;
+		// 	// 	case "night":
+		// 	// 		TSPlayer.Server.SetTime(false, 0.0);
+		// 	// 		TSPlayer.All.SendInfoMessage("{0} set the time to 19:30.", args.Player.Name);
+		// 	// 		break;
+		// 	// 	case "noon":
+		// 	// 		TSPlayer.Server.SetTime(true, 27000.0);
+		// 	// 		TSPlayer.All.SendInfoMessage("{0} set the time to 12:00.", args.Player.Name);
+		// 	// 		break;
+		// 	// 	case "midnight":
+		// 	// 		TSPlayer.Server.SetTime(false, 16200.0);
+		// 	// 		TSPlayer.All.SendInfoMessage("{0} set the time to 0:00.", args.Player.Name);
+		// 	// 		break;
+        //     // }
+        // }
 
         // 修改月相
         private void ChangeMoonPhase(CommandArgs args)
@@ -336,33 +324,488 @@ namespace Plugin
             args.Player.SendSuccessMessage("月亮样式已改为 {0}", _moonTypes.Keys.ElementAt(moontype-1));
         }
 
-
-        /// <summary> 额外的指令帮助 </summary>
-        private void helper(CommandArgs args)
+        /// <summary>  </summary>
+        private void BossManage(CommandArgs args)
         {
             if(args.Parameters.Count<string>()==0 || args.Parameters[0].ToLowerInvariant()=="help")
             {
-                args.Player.SendInfoMessage("/helper boss, spawnboss指令备注");
-                args.Player.SendInfoMessage("/helper npc, spawnmob指令备注,NPC部分");
+                args.Player.SendInfoMessage("/boss info, 查看boss进度");
+                args.Player.SendInfoMessage("/boss spawn, spawnboss 召唤指令备注");
+                args.Player.SendInfoMessage("/boss toggle <boss名>, 切换boss击败状态");
+
                 return;
             }
 
+            string CFlag(bool foo){
+                if (foo)
+                    return "✔";
+                else
+                    return "-";
+            }
+
+            void toggleBoss(string flag){
+                switch (flag.ToLowerInvariant())
+                {
+                    // 史莱姆王
+                    case "史莱姆王":
+                    case "king slime":
+                    case "king":
+                    case "ks":
+                        NPC.downedSlimeKing = !NPC.downedSlimeKing;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedSlimeKing)
+                            args.Player.SendSuccessMessage("已标记 史莱姆王 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 史莱姆王 为未击败");
+                        break;
+
+
+                    // 克苏鲁之眼
+                    case "克苏鲁之眼":
+                    case "克眼":
+                    case "eye of cthulhu":
+                    case "eye":
+                    case "eoc":
+                        NPC.downedBoss1 = !NPC.downedBoss1;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedBoss1)
+                            args.Player.SendSuccessMessage("已标记 克苏鲁之眼 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 克苏鲁之眼 为未击败");
+                        break;
+
+
+                    // 世界吞噬怪 或 克苏鲁之脑
+                    case "世界吞噬怪":
+                    case "世吞":
+                    case "黑长直":
+                    case "克苏鲁之脑":
+                    case "克脑":
+                    case "brain of cthulhu":
+                    case "boc":
+                    case "brain":
+                    case "eater of worlds":
+                    case "eow":
+                    case "eater":
+                    case "boss2":
+                        NPC.downedBoss2 = !NPC.downedBoss2;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        string boss2Name2 = "";
+                        if(Main.ActiveWorldFileData.HasCrimson && Main.ActiveWorldFileData.HasCorruption)
+                            boss2Name2 = "世界吞噬怪 或 克苏鲁之脑";
+                        else if(Main.ActiveWorldFileData.HasCrimson)
+                            boss2Name2 = "克苏鲁之脑";
+                        else if(Main.ActiveWorldFileData.HasCorruption)
+                            boss2Name2 = "世界吞噬怪";
+
+                        if (NPC.downedBoss1)
+                            args.Player.SendSuccessMessage("已标记 {0} 为已击败", boss2Name2);
+                        else
+                            args.Player.SendSuccessMessage("已标记 {0} 为未击败", boss2Name2);
+                        break;
+
+
+                    // 骷髅王
+                    case "骷髅王":
+                    case "skeletron":
+                    case "boss3":
+                        NPC.downedBoss3 = !NPC.downedBoss3;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedBoss3)
+                            args.Player.SendSuccessMessage("已标记 骷髅王 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 骷髅王 为未击败");
+                        break;
+
+
+                    // 蜂王
+                    case "蜂王":
+                    case "蜂后":
+                    case "queen bee":
+                    case "qb":
+                        NPC.downedQueenBee = !NPC.downedQueenBee;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedQueenBee)
+                            args.Player.SendSuccessMessage("已标记 蜂王 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 蜂王 为未击败");
+                        break;
+
+
+                    // 血肉墙
+                    case "血肉墙":
+                    case "血肉之墙":
+                    case "肉山":
+                    case "wall of flesh":
+                    case "wof":
+                        if (Main.hardMode)
+                        {
+                            Main.hardMode = false;
+                            TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                            args.Player.SendSuccessMessage("已标记 血肉墙 为未击败（困难模式 已关闭）");
+                        }
+                        else if (!TShock.Config.Settings.DisableHardmode)
+                        {
+                            WorldGen.StartHardmode();
+                            args.Player.SendSuccessMessage("已标记 血肉墙 为已击败（困难模式 已开启）");
+                        }
+                        break;
+
+
+                    // 毁灭者
+                    case "毁灭者":
+                    case "铁长直":
+                    case "destroyer":
+                        NPC.downedMechBoss1 = !NPC.downedMechBoss1;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedMechBoss1)
+                            args.Player.SendSuccessMessage("已标记 毁灭者 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 毁灭者 为未击败");
+                        break;
+
+
+                    // 双子魔眼
+                    case "双子魔眼":
+                    case "twins":
+                        NPC.downedMechBoss2 = !NPC.downedMechBoss2;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedMechBoss2)
+                            args.Player.SendSuccessMessage("已标记 双子魔眼 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 双子魔眼 为未击败");
+                        break;
+
+
+                    // 机械骷髅王
+                    case "机械骷髅王":
+                    case "skeletron prime":
+                    case "prime":
+                        NPC.downedMechBoss3 = !NPC.downedMechBoss3;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedMechBoss3)
+                            args.Player.SendSuccessMessage("已标记 机械骷髅王 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 机械骷髅王 为未击败");
+                        break;
+
+
+                    // 世纪之花
+                    case "世纪之花":
+                    case "plantera":
+                        NPC.downedPlantBoss = !NPC.downedPlantBoss;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedPlantBoss)
+                            args.Player.SendSuccessMessage("已标记 世纪之花 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 世纪之花 为未击败");
+                        break;
+
+
+                    // 石巨人
+                    case "石巨人":
+                    case "golem":
+                        NPC.downedGolemBoss = !NPC.downedGolemBoss;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedGolemBoss)
+                            args.Player.SendSuccessMessage("已标记 石巨人 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 石巨人 为未击败");
+                        break;
+
+
+                    // 史莱姆皇后
+                    case "史莱姆皇后":
+                    case "史莱姆女王":
+                    case "queen slime":
+                    case "qs":
+                        NPC.downedQueenSlime = !NPC.downedQueenSlime;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedQueenSlime)
+                            args.Player.SendSuccessMessage("已标记 史莱姆皇后 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 史莱姆皇后 为未击败");
+                        break;
+
+
+                    // 光之女皇
+                    case "光之女皇":
+                    case "光女":
+                    case "光之女神":
+                    case "光之皇后":
+                    case "empress of light":
+                    case "empress":
+                    case "eol":
+                        NPC.downedEmpressOfLight = !NPC.downedEmpressOfLight;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedEmpressOfLight)
+                            args.Player.SendSuccessMessage("已标记 光之女皇 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 光之女皇 为未击败");
+                        break;
+
+                    
+                    // 猪龙鱼公爵
+                    case "猪龙鱼公爵":
+                    case "猪鲨":
+                    case "duke fishron":
+                    case "duke":
+                    case "fishron":
+                        NPC.downedFishron = !NPC.downedFishron;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedFishron)
+                            args.Player.SendSuccessMessage("已标记 猪龙鱼公爵 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 猪龙鱼公爵 为未击败");
+                        break;
+
+
+
+                    // 拜月教邪教徒
+                    case "拜月教邪教徒":
+                    case "拜月教":
+                    case "邪教徒":
+                    case "lunatic cultist":
+                    case "lunatic":
+                    case "cultist":
+                    case "lc":
+                        NPC.downedAncientCultist = !NPC.downedAncientCultist;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedAncientCultist)
+                            args.Player.SendSuccessMessage("已标记 拜月教邪教徒 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 拜月教邪教徒 为未击败");
+                        break;
+
+
+                    // 月亮领主
+                    case "月亮领主":
+                    case "月总":
+                    case "moon lord":
+                    case "moon":
+                    case "ml":
+                        NPC.downedMoonlord = !NPC.downedMoonlord;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedMoonlord)
+                            args.Player.SendSuccessMessage("已标记 月亮领主 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 月亮领主 为未击败");
+                        break;
+
+
+                    // 小丑
+                    case "小丑":
+                    case "clown":
+                        NPC.downedClown = !NPC.downedClown;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedClown)
+                            args.Player.SendSuccessMessage("已标记 小丑 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 小丑 为未击败");
+                        break;
+
+
+                    // 哥布林军队
+                    case "哥布林军队":
+                    case "哥布林":
+                    case "goblin":
+                    case "goblins":
+                        NPC.downedGoblins = !NPC.downedGoblins;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedGoblins)
+                            args.Player.SendSuccessMessage("已标记 哥布林军队 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 哥布林军队 为未击败");
+                        break;
+
+
+                    // 海盗入侵
+                    case "海盗入侵":
+                    case "荷兰飞盗船":
+                    case "海盗船":
+                    case "pirate":
+                    case "pirates":
+                    case "flying dutchman":
+                    case "flying":
+                    case "dutchman":
+                        NPC.downedPirates = !NPC.downedPirates;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedPirates)
+                            args.Player.SendSuccessMessage("已标记 海盗入侵 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 海盗入侵 为未击败");
+                        break;
+
+
+                    // 火星暴乱
+                    case "火星暴乱":
+                    case "火星人入侵":
+                    case "火星飞碟":
+                    case "ufo":
+                    case "martian saucer":
+                    case "martian":
+                    case "martians":
+                        NPC.downedMartians = !NPC.downedMartians;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedMartians)
+                            args.Player.SendSuccessMessage("已标记 火星暴乱 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 火星暴乱 为未击败");
+                        break;
+
+
+                    // 哀木
+                    case "哀木":
+                    case "mourning wood":
+                    case "wood":
+                    case "halloween tree":
+                    case "ht":
+                        NPC.downedHalloweenTree = !NPC.downedHalloweenTree;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedHalloweenTree)
+                            args.Player.SendSuccessMessage("已标记 哀木 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 哀木 为未击败");
+                        break;
+
+
+                    // 南瓜王
+                    case "南瓜王":
+                    case "pumpking":
+                    case "halloween king":
+                    case "hk":
+                        NPC.downedHalloweenKing = !NPC.downedHalloweenKing;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedHalloweenKing)
+                            args.Player.SendSuccessMessage("已标记 南瓜王 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 南瓜王 为未击败");
+                        break;
+
+
+                    // 冰雪女王
+                    case "冰雪女王":
+                    case "冰雪皇后":
+                    case "ice queen":
+                        NPC.downedChristmasIceQueen = !NPC.downedChristmasIceQueen;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedChristmasIceQueen)
+                            args.Player.SendSuccessMessage("已标记 冰雪女王 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 冰雪女王 为未击败");
+                        break;
+
+
+                    // 常绿尖叫怪
+                    case "常绿尖叫怪":
+                    case "everscream":
+                        NPC.downedChristmasTree = !NPC.downedChristmasTree;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedChristmasTree)
+                            args.Player.SendSuccessMessage("已标记 常绿尖叫怪 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 常绿尖叫怪 为未击败");
+                        break;
+
+
+                    // 圣诞坦克
+                    case "圣诞坦克":
+                    case "santa":
+                    case "santa-nk1":
+                    case "tank":
+                        NPC.downedChristmasSantank = !NPC.downedChristmasSantank;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedChristmasSantank)
+                            args.Player.SendSuccessMessage("已标记 圣诞坦克 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 圣诞坦克 为未击败");
+                        break;
+
+
+                    // 日耀柱
+                    case "日耀柱":
+                    case "日耀":
+                    case "日曜柱":
+                    case "日曜":
+                    case "solar pillar":
+                    case "solar":
+                        NPC.downedTowerSolar = !NPC.downedTowerSolar;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedTowerSolar)
+                            args.Player.SendSuccessMessage("已标记 日曜柱 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 日曜柱 为未击败");
+                        break;
+
+
+                    // 星旋柱
+                    case "星旋柱":
+                    case "星旋":
+                    case "vortex pillar":
+                    case "vortex":
+                        NPC.downedTowerVortex = !NPC.downedTowerVortex;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedTowerVortex)
+                            args.Player.SendSuccessMessage("已标记 星旋柱 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 星旋柱 为未击败");
+                        break;
+
+
+                    // 星云柱
+                    case "星云柱":
+                    case "星云":
+                    case "nebula pillar":
+                    case "nebula":
+                        NPC.downedTowerNebula = !NPC.downedTowerNebula;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedTowerNebula)
+                            args.Player.SendSuccessMessage("已标记 星云柱 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 星云柱 为未击败");
+                        break;
+
+
+                    // 星尘柱
+                    case "星尘柱":
+                    case "星尘":
+                    case "stardust pillar":
+                    case "stardust":
+                        NPC.downedTowerStardust = !NPC.downedTowerStardust;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        if (NPC.downedTowerStardust)
+                            args.Player.SendSuccessMessage("已标记 星尘柱 为已击败");
+                        else
+                            args.Player.SendSuccessMessage("已标记 星尘柱 为未击败");
+                        break;
+
+
+                    // 双足翼龙
+                    case "betsy":
+                        args.Player.SendErrorMessage("暂时不支持标记 双足翼龙");
+                        break;
+                    
+                    default:
+                        args.Player.SendErrorMessage("语法不正确！");
+                        break;
+                }
+
+            }
+
+            List<string> li = new List<string>();
+            List<string> li1 = new List<string>();
+            List<string> li2 = new List<string>();
+            List<string> li3 = new List<string>();
             switch (args.Parameters[0].ToLowerInvariant())
             {
-                // npc
-                case "npc":
-                    List<string> names = _NPCTypes.Keys.ToList<string>();
-                    List<string> newStrs = new List<string>();
-                    for (int i = 0; i < names.Count; i++)
-                    {
-                        newStrs.Add( string.Format("/sm {0} ({1})", _NPCTypes[names[i]], names[i]) );
-                    }
-                    args.Player.SendInfoMessage(String.Join(", ", newStrs));
+                default:
+                    args.Player.SendErrorMessage("语法不正确！");
                     break;
+
 
                 // boss
                 case "sb":
-                case "boss":
+                case "spawn":
                     string [] part1 = {
                         "\"king slime\" (史莱姆王)",
                         "\"eye of cthulhu\" (克苏鲁之眼)",
@@ -400,9 +843,171 @@ namespace Plugin
                         "\"nebula pillar\" (星云柱)",
                         "\"stardust pillar\" (星尘柱)"
                     };
+                    args.Player.SendInfoMessage("以下是 boss 生成指令, sb = spawnboss：");
                     args.Player.SendInfoMessage("/sb " + String.Join(", /sb ", part1));
                     args.Player.SendInfoMessage("/sb " + String.Join(", /sb ", part2));
                     args.Player.SendInfoMessage("/sb " + String.Join(", /sb ", part3));
+                    break;
+                                
+
+                // 查看boss进度
+                case "info":
+                    li1.Add(CFlag(NPC.downedSlimeKing) + "史莱姆王");
+                    li1.Add(CFlag(NPC.downedBoss1) + "克苏鲁之眼");
+
+                    string boss2Name = "";
+                    if(Main.ActiveWorldFileData.HasCrimson && Main.ActiveWorldFileData.HasCorruption)
+                        boss2Name = "世界吞噬怪 或 克苏鲁之脑";
+                    else if(Main.ActiveWorldFileData.HasCrimson)
+                        boss2Name = "克苏鲁之脑";
+                    else if(Main.ActiveWorldFileData.HasCorruption)
+                        boss2Name = "世界吞噬怪";
+                    li1.Add(CFlag(NPC.downedBoss2) + boss2Name);
+
+                    li1.Add(CFlag(NPC.downedBoss3) + "骷髅王");
+                    li1.Add(CFlag(NPC.downedQueenBee) + "蜂王");
+                    li1.Add(CFlag(Main.hardMode) + "血肉墙");
+
+
+                    li2.Add(CFlag(NPC.downedMechBoss1) + "毁灭者");
+                    li2.Add(CFlag(NPC.downedMechBoss2) + "双子魔眼");
+                    li2.Add(CFlag(NPC.downedMechBoss3) + "机械骷髅王");
+
+                    li2.Add(CFlag(NPC.downedPlantBoss) + "世纪之花");
+                    li2.Add(CFlag(NPC.downedGolemBoss) + "石巨人");
+
+                    li2.Add(CFlag(NPC.downedQueenSlime) + "史莱姆皇后");
+                    li2.Add(CFlag(NPC.downedEmpressOfLight) + "光之女皇");
+                    
+                    li2.Add(CFlag(NPC.downedFishron) + "猪龙鱼公爵");
+                    li2.Add(CFlag(NPC.downedAncientCultist) + "拜月教邪教徒");
+                    li2.Add(CFlag(NPC.downedMoonlord) + "月亮领主");
+
+
+                    li3.Add(CFlag(NPC.downedClown) + "小丑");
+                    li3.Add(CFlag(NPC.downedGoblins) + "哥布林军队");
+                    li3.Add(CFlag(NPC.downedPirates) + "海盗入侵");
+                    li3.Add(CFlag(NPC.downedMartians) + "火星暴乱");
+
+                    li3.Add(CFlag(NPC.downedHalloweenTree) + "哀木");
+                    li3.Add(CFlag(NPC.downedHalloweenKing) + "南瓜王");
+
+                    li3.Add(CFlag(NPC.downedChristmasIceQueen) + "冰雪女王");
+                    li3.Add(CFlag(NPC.downedChristmasTree) + "常绿尖叫怪");
+                    li3.Add(CFlag(NPC.downedChristmasSantank) + "圣诞坦克");
+
+                    li3.Add(CFlag(NPC.downedTowerSolar) + "日耀柱");
+                    li3.Add(CFlag(NPC.downedTowerVortex) + "星旋柱");
+                    li3.Add(CFlag(NPC.downedTowerNebula) + "星云柱");
+                    li3.Add(CFlag(NPC.downedTowerStardust) + "星尘柱");
+
+
+                    args.Player.SendInfoMessage("肉前：{0}", String.Join(", ", li1));
+                    args.Player.SendInfoMessage("肉后：{0}", String.Join(", ", li2));
+                    args.Player.SendInfoMessage("事件：{0}", String.Join(", ", li3));
+                    break;
+                
+
+                // 切换boss击败状态
+                case "toggle":
+                    if (args.Parameters.Count < 2){
+                        args.Player.SendInfoMessage("语法不正确 /boss toggle <boss名>");
+                        return;
+                    }
+                    toggleBoss(args.Parameters[1]);
+                    break;
+
+            }
+
+
+
+        }
+
+
+        /// <summary>  </summary>
+        private void NpcManage(CommandArgs args)
+        {
+            if(args.Parameters.Count<string>()==0 || args.Parameters[0].ToLowerInvariant()=="help")
+            {
+                args.Player.SendInfoMessage("/npc info, 查看npc解救情况");
+                args.Player.SendInfoMessage("/npc spawn, spawnmob 召唤指令备注");
+                return;
+            }
+
+            List<string> li = new List<string>();
+            List<string> li1 = new List<string>();
+            List<string> li2 = new List<string>();
+            switch (args.Parameters[0].ToLowerInvariant())
+            {
+                default:
+                    args.Player.SendErrorMessage("语法不正确！");
+                    break;
+
+                case "sm":
+                case "spawn":
+                    List<string> names = _NPCTypes.Keys.ToList<string>();
+                    List<string> newStrs = new List<string>();
+                    for (int i = 0; i < names.Count; i++)
+                    {
+                        newStrs.Add( string.Format("/sm {0} ({1})", _NPCTypes[names[i]], names[i]) );
+                    }
+                    args.Player.SendInfoMessage("以下是 npc 生成指令, sm = spawnmob：");
+                    args.Player.SendInfoMessage(String.Join(", ", newStrs));
+                    break;
+                
+
+                // 查看npc解救情况
+                case "info":
+                    li = NPC.savedAngler ? li1 : li2;
+                    li.Add("渔夫");
+
+                    li = NPC.savedGoblin ? li1 : li2;
+                    li.Add("哥布林");
+
+                    li = NPC.savedMech ? li1 : li2;
+                    li.Add("机械师");
+
+                    li = NPC.savedStylist ? li1 : li2;
+                    li.Add("发型师");
+
+                    li = NPC.savedBartender ? li1 : li2;
+                    li.Add("酒馆老板");
+
+                    li = NPC.savedGolfer ? li1 : li2;
+                    li.Add("高尔夫球手");
+
+                    li = NPC.savedWizard ? li1 : li2;
+                    li.Add("巫师");
+
+                    li = NPC.savedTaxCollector ? li1 : li2;
+                    li.Add("税收官");
+
+                    li = NPC.savedTaxCollector ? li1 : li2;
+                    li.Add("税收官");
+
+                    if (li1.Count > 0)
+                        args.Player.SendInfoMessage("已解救：{0}", String.Join(", ", li1));
+                    if (li2.Count > 0 )
+                        args.Player.SendInfoMessage("待解救：{0}", String.Join(", ", li2));
+
+
+                    // 城镇宠物
+                    li1 = new List<string>();
+                    li2 = new List<string>();
+
+                    li = NPC.boughtCat ? li1 : li2;
+                    li.Add("猫");
+
+                    li = NPC.boughtDog ? li1 : li2;
+                    li.Add("狗");
+
+                    li = NPC.boughtBunny ? li1 : li2;
+                    li.Add("兔子");
+                    if (li1.Count > 0)
+                        args.Player.SendInfoMessage("已购买：{0}", String.Join(", ", li1));
+                    if (li2.Count > 0 )
+                        args.Player.SendInfoMessage("待购买：{0}", String.Join(", ", li2));
+
                     break;
             }
         }
@@ -411,16 +1016,25 @@ namespace Plugin
         // 获取秘密世界种子状态描述
         private string GetSecretWorldDescription()
         {
-            if(Main.drunkWorld && Main.getGoodWorld){
-                return "秘密世界：for the worthy 和 05162020";
-            }
+            string s = "";
             if(Main.getGoodWorld){
-                return "秘密世界：for the worthy";
+                s += "for the worthy";
             }
             if(Main.drunkWorld){
-                return "秘密世界：05162020";
+                if ( s != "")
+                    s += ", ";
+                s += "05162020";
             }
-            return "";
+            if(Main.tenthAnniversaryWorld){
+                if ( s != "")
+                    s += ", ";
+                s += "05162021";
+            }
+
+            if ( s != "")
+                s = "秘密世界:  " + s;
+
+            return s;
         }
 
 
@@ -428,7 +1042,7 @@ namespace Plugin
         private string GetCorruptionDescription()
         {
             if(Main.ActiveWorldFileData.HasCrimson && Main.ActiveWorldFileData.HasCorruption){
-                return "腐化类型: 腐化和猩红共存";
+                return "腐化类型: 腐化和猩红";
             }
             if(Main.ActiveWorldFileData.HasCrimson){
                 return "腐化类型: 猩红";
