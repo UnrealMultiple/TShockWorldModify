@@ -32,6 +32,7 @@ namespace Plugin
             Commands.ChatCommands.Add(new Command(new List<string>() {"moonstyle"}, ChangeMoonStyle, "moonstyle", "ms") { HelpText = "月亮样式管理"});
             Commands.ChatCommands.Add(new Command(new List<string>() {"bossmanage"}, BossManage, "bossmanage", "bm", "boss" ) { HelpText = "boss管理"});
             Commands.ChatCommands.Add(new Command(new List<string>() {"npcmanage"}, NpcManage, "npcmanage", "nm", "npc") { HelpText = "npc管理"});
+            Commands.ChatCommands.Add(new Command(new List<string>() {""}, BossInfo, "bossinfo", "bi") { HelpText = "boss进度信息"});
         }
 
 
@@ -46,6 +47,7 @@ namespace Plugin
                 args.Player.SendInfoMessage("/wm 0516，开启/关闭 05162020 秘密世界");
                 args.Player.SendInfoMessage("/wm 05162021，开启/关闭 05162021 秘密世界");
                 args.Player.SendInfoMessage("/wm ftw，开启/关闭 for the worthy 秘密世界");
+                args.Player.SendInfoMessage("/wm dst，开启/关闭 永恒领域 秘密世界（饥荒联动）");
                 args.Player.SendInfoMessage("/wm research, 解锁全物品研究");
                 args.Player.SendInfoMessage("/moon help,  月相管理");
                 args.Player.SendInfoMessage("/moonstyle help,  月亮样式管理");
@@ -139,6 +141,7 @@ namespace Plugin
                     }
                     break;
                 
+
                 // 10周年庆典,tenthAnniversaryWorld
                 case "5162021":
                 case "05162021":
@@ -173,6 +176,22 @@ namespace Plugin
                         args.Player.SendSuccessMessage("已开启 for the worthy 秘密世界");
                     }
                     break;
+                
+
+                //  饥荒联动
+                case "eye":
+                case "dst":
+                case "constant":
+                    if (Main.dontStarveWorld) {
+                        Main.dontStarveWorld = false;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        args.Player.SendSuccessMessage("已关闭 永恒领域 秘密世界（饥荒联动）");
+                    } else {
+                        Main.dontStarveWorld = true;
+                        TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                        args.Player.SendSuccessMessage("已开启 永恒领域 秘密世界（饥荒联动）");
+                    }
+                    break;
 
 
                 // 全物品研究（有待测试）
@@ -190,63 +209,14 @@ namespace Plugin
                         TShock.ResearchDatastore.SacrificeItem(ids[i], amountNeeded, args.Player);
                     }
                     args.Player.SendSuccessMessage("已解锁 {0} 个物品研究，重新开服可生效", ids.Count);
-                    args.Player.SendSuccessMessage("研究数据仅保存在服务器上，每张地图的研究数据是分开");
+                    args.Player.SendSuccessMessage("研究数据仅保存在服务器上，每张地图的研究数据是分开的");
                     TSPlayer.All.SendData(PacketTypes.PlayerInfo);
                     break;
-
-                
-                // 固定时间（测试用）
-                // case "day":
-                //     //定义线程
-                //     Thread LogThread = new Thread(new ThreadStart(DoService));
-                //     //设置线程为后台线程,那样进程里就不会有未关闭的程序了
-                //     LogThread.IsBackground = true;
-                //     if (bStop == false)
-                //     {
-                //         LogThread.Start();//起线程
-                //     }
-                //     break;
 
             }
         }
 
 
-        // public static bool bStop = false;
-        // private static void DoService()
-        // {
-        //     while (true)
-        //     {
-        //         bStop = false;
-        //         SendToService();
-        //         System.Threading.Thread.Sleep(1000*60*5);//1000=1秒
-        //     }
-        // }
-
-        // private static void SendToService()
-        // {
-        //     TSPlayer.Server.SetTime(true, 20000.0); //10:00
-        //     // TSPlayer.Server.SetTime(false, 0.0);
-
-		// 	// switch (args.Parameters[0].ToLower())
-		// 	// {
-		// 	// 	case "day":
-		// 	// 		TSPlayer.Server.SetTime(true, 0.0);
-		// 	// 		TSPlayer.All.SendInfoMessage("{0} set the time to 4:30.", args.Player.Name);
-		// 	// 		break;
-		// 	// 	case "night":
-		// 	// 		TSPlayer.Server.SetTime(false, 0.0);
-		// 	// 		TSPlayer.All.SendInfoMessage("{0} set the time to 19:30.", args.Player.Name);
-		// 	// 		break;
-		// 	// 	case "noon":
-		// 	// 		TSPlayer.Server.SetTime(true, 27000.0);
-		// 	// 		TSPlayer.All.SendInfoMessage("{0} set the time to 12:00.", args.Player.Name);
-		// 	// 		break;
-		// 	// 	case "midnight":
-		// 	// 		TSPlayer.Server.SetTime(false, 16200.0);
-		// 	// 		TSPlayer.All.SendInfoMessage("{0} set the time to 0:00.", args.Player.Name);
-		// 	// 		break;
-        //     // }
-        // }
 
         // 修改月相
         private void ChangeMoonPhase(CommandArgs args)
@@ -330,30 +300,23 @@ namespace Plugin
             args.Player.SendSuccessMessage("月亮样式已改为 {0}", _moonTypes.Keys.ElementAt(moontype-1));
         }
 
-        /// <summary> BOSS管理  </summary>
+        # region Boss 管理
+             
+        /// <summary>
+        /// BOSS管理
+        /// </summary>
         private void BossManage(CommandArgs args)
         {
             if(args.Parameters.Count<string>()==0 || args.Parameters[0].ToLowerInvariant()=="help")
             {
                 args.Player.SendInfoMessage("/boss info, 查看boss进度");
-                args.Player.SendInfoMessage("/boss spawn, spawnboss 召唤指令备注");
+                args.Player.SendInfoMessage("/boss sb, sb 召唤指令备注（SpawnBoss boss召唤指令）");
                 args.Player.SendInfoMessage("/boss toggle <boss名>, 切换boss击败状态");
 
                 return;
             }
 
-            string CFlag(bool foo){
-                if (foo)
-                    return "✔";
-                else
-                    return "-";
-            }
 
-            
-            List<string> li = new List<string>();
-            List<string> li1 = new List<string>();
-            List<string> li2 = new List<string>();
-            List<string> li3 = new List<string>();
             switch (args.Parameters[0].ToLowerInvariant())
             {
                 default:
@@ -367,6 +330,7 @@ namespace Plugin
                     string [] part1 = {
                         "\"king slime\" (史莱姆王)",
                         "\"eye of cthulhu\" (克苏鲁之眼)",
+                        "deerclops (鹿角怪)",
                         "\"brain of cthulhu\" (克苏鲁之脑)",
                         "\"eater of worlds\" (世界吞噬怪)",
                         "\"queen bee\" (蜂王)",
@@ -410,59 +374,7 @@ namespace Plugin
 
                 // 查看boss进度
                 case "info":
-                    li1.Add(CFlag(NPC.downedSlimeKing) + "史莱姆王");
-                    li1.Add(CFlag(NPC.downedBoss1) + "克苏鲁之眼");
-
-                    string boss2Name = "";
-                    if(Main.ActiveWorldFileData.HasCrimson && Main.ActiveWorldFileData.HasCorruption)
-                        boss2Name = "世界吞噬怪 或 克苏鲁之脑";
-                    else if(Main.ActiveWorldFileData.HasCrimson)
-                        boss2Name = "克苏鲁之脑";
-                    else if(Main.ActiveWorldFileData.HasCorruption)
-                        boss2Name = "世界吞噬怪";
-                    li1.Add(CFlag(NPC.downedBoss2) + boss2Name);
-
-                    li1.Add(CFlag(NPC.downedBoss3) + "骷髅王");
-                    li1.Add(CFlag(NPC.downedQueenBee) + "蜂王");
-                    li1.Add(CFlag(Main.hardMode) + "血肉墙");
-
-
-                    li2.Add(CFlag(NPC.downedMechBoss1) + "毁灭者");
-                    li2.Add(CFlag(NPC.downedMechBoss2) + "双子魔眼");
-                    li2.Add(CFlag(NPC.downedMechBoss3) + "机械骷髅王");
-
-                    li2.Add(CFlag(NPC.downedPlantBoss) + "世纪之花");
-                    li2.Add(CFlag(NPC.downedGolemBoss) + "石巨人");
-
-                    li2.Add(CFlag(NPC.downedQueenSlime) + "史莱姆皇后");
-                    li2.Add(CFlag(NPC.downedEmpressOfLight) + "光之女皇");
-                    
-                    li2.Add(CFlag(NPC.downedFishron) + "猪龙鱼公爵");
-                    li2.Add(CFlag(NPC.downedAncientCultist) + "拜月教邪教徒");
-                    li2.Add(CFlag(NPC.downedMoonlord) + "月亮领主");
-
-
-                    li3.Add(CFlag(NPC.downedClown) + "小丑");
-                    li3.Add(CFlag(NPC.downedGoblins) + "哥布林军队");
-                    li3.Add(CFlag(NPC.downedPirates) + "海盗入侵");
-                    li3.Add(CFlag(NPC.downedMartians) + "火星暴乱");
-
-                    li3.Add(CFlag(NPC.downedHalloweenTree) + "哀木");
-                    li3.Add(CFlag(NPC.downedHalloweenKing) + "南瓜王");
-
-                    li3.Add(CFlag(NPC.downedChristmasIceQueen) + "冰雪女王");
-                    li3.Add(CFlag(NPC.downedChristmasTree) + "常绿尖叫怪");
-                    li3.Add(CFlag(NPC.downedChristmasSantank) + "圣诞坦克");
-
-                    li3.Add(CFlag(NPC.downedTowerSolar) + "日耀柱");
-                    li3.Add(CFlag(NPC.downedTowerVortex) + "星旋柱");
-                    li3.Add(CFlag(NPC.downedTowerNebula) + "星云柱");
-                    li3.Add(CFlag(NPC.downedTowerStardust) + "星尘柱");
-
-
-                    args.Player.SendInfoMessage("肉前：{0}", String.Join(", ", li1));
-                    args.Player.SendInfoMessage("肉后：{0}", String.Join(", ", li2));
-                    args.Player.SendInfoMessage("事件：{0}", String.Join(", ", li3));
+                    BossInfo(args);
                     break;
                 
 
@@ -475,7 +387,9 @@ namespace Plugin
 
         }
 
-         /// <summary> 切换BOSS击败状态 </summary>
+        /// <summary>
+        /// 切换BOSS击败状态
+        /// </summary>
         private void ToggleBoss(CommandArgs args)
         {
             if (args.Parameters.Count < 2){
@@ -493,6 +407,7 @@ namespace Plugin
                     string [] li1 = {
                         "史莱姆王",
                         "克苏鲁之眼",
+                        "鹿角怪",
                         "世界吞噬怪",
                         "克苏鲁之脑",
                         "蜂王",
@@ -547,6 +462,21 @@ namespace Plugin
                         args.Player.SendSuccessMessage("已标记 史莱姆王 为已击败");
                     else
                         args.Player.SendSuccessMessage("已标记 史莱姆王 为未击败");
+                    break;
+
+
+                //  鹿角怪
+                case "鹿角怪":
+                case "deerclops":
+                case "deer":
+                case "独眼巨鹿":
+                case "巨鹿":
+                    NPC.downedDeerclops = !NPC.downedDeerclops;
+                    TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                    if (NPC.downedDeerclops)
+                        args.Player.SendSuccessMessage("已标记 鹿角怪 为已击败");
+                    else
+                        args.Player.SendSuccessMessage("已标记 鹿角怪 为未击败");
                     break;
 
 
@@ -978,15 +908,92 @@ namespace Plugin
             }
         }
 
+        private void BossInfo(CommandArgs args)
+        {
+            string CFlag(bool foo){
+                if (foo)
+                    return "✔";
+                else
+                    return "-";
+            }
 
-        /// <summary> npc 管理 </summary>
+            List<string> li = new List<string>();
+            List<string> li1 = new List<string>();
+            List<string> li2 = new List<string>();
+            List<string> li3 = new List<string>();
+
+            li1.Add(CFlag(NPC.downedSlimeKing) + "史莱姆王");
+            li1.Add(CFlag(NPC.downedBoss1) + "克苏鲁之眼");
+            li1.Add(CFlag(NPC.downedDeerclops ) + "鹿角怪");
+
+            string boss2Name = "";
+            if(Main.ActiveWorldFileData.HasCrimson && Main.ActiveWorldFileData.HasCorruption)
+                boss2Name = "世界吞噬怪 或 克苏鲁之脑";
+            else if(Main.ActiveWorldFileData.HasCrimson)
+                boss2Name = "克苏鲁之脑";
+            else if(Main.ActiveWorldFileData.HasCorruption)
+                boss2Name = "世界吞噬怪";
+            li1.Add(CFlag(NPC.downedBoss2) + boss2Name);
+
+            li1.Add(CFlag(NPC.downedBoss3) + "骷髅王");
+            li1.Add(CFlag(NPC.downedQueenBee) + "蜂王");
+            li1.Add(CFlag(Main.hardMode) + "血肉墙");
+
+
+            li2.Add(CFlag(NPC.downedMechBoss1) + "毁灭者");
+            li2.Add(CFlag(NPC.downedMechBoss2) + "双子魔眼");
+            li2.Add(CFlag(NPC.downedMechBoss3) + "机械骷髅王");
+
+            li2.Add(CFlag(NPC.downedPlantBoss) + "世纪之花");
+            li2.Add(CFlag(NPC.downedGolemBoss) + "石巨人");
+
+            li2.Add(CFlag(NPC.downedQueenSlime) + "史莱姆皇后");
+            li2.Add(CFlag(NPC.downedEmpressOfLight) + "光之女皇");
+            
+            li2.Add(CFlag(NPC.downedFishron) + "猪龙鱼公爵");
+            li2.Add(CFlag(NPC.downedAncientCultist) + "拜月教邪教徒");
+            li2.Add(CFlag(NPC.downedMoonlord) + "月亮领主");
+
+
+            li3.Add(CFlag(NPC.downedClown) + "小丑");
+            li3.Add(CFlag(NPC.downedGoblins) + "哥布林军队");
+            li3.Add(CFlag(NPC.downedPirates) + "海盗入侵");
+            li3.Add(CFlag(NPC.downedMartians) + "火星暴乱");
+
+            li3.Add(CFlag(NPC.downedHalloweenTree) + "哀木");
+            li3.Add(CFlag(NPC.downedHalloweenKing) + "南瓜王");
+
+            li3.Add(CFlag(NPC.downedChristmasIceQueen) + "冰雪女王");
+            li3.Add(CFlag(NPC.downedChristmasTree) + "常绿尖叫怪");
+            li3.Add(CFlag(NPC.downedChristmasSantank) + "圣诞坦克");
+
+            li3.Add(CFlag(NPC.downedTowerSolar) + "日耀柱");
+            li3.Add(CFlag(NPC.downedTowerVortex) + "星旋柱");
+            li3.Add(CFlag(NPC.downedTowerNebula) + "星云柱");
+            li3.Add(CFlag(NPC.downedTowerStardust) + "星尘柱");
+
+
+            args.Player.SendInfoMessage("肉前：{0}", String.Join(", ", li1));
+            args.Player.SendInfoMessage("肉后：{0}", String.Join(", ", li2));
+            args.Player.SendInfoMessage("事件：{0}", String.Join(", ", li3));
+        }
+
+        # endregion
+
+
+        # region NPC 管理
+
+        /// <summary>
+        /// npc 管理
+        /// </summary>
         private void NpcManage(CommandArgs args)
         {
             if(args.Parameters.Count<string>()==0 || args.Parameters[0].ToLowerInvariant()=="help")
             {
                 args.Player.SendInfoMessage("/npc info, 查看npc解救情况");
-                args.Player.SendInfoMessage("/npc toggle <解救npc名，或 猫/狗/兔>, 切换NPC解救状态");
-                args.Player.SendInfoMessage("/npc spawn, spawnmob 召唤指令备注");
+                args.Player.SendInfoMessage("/npc sm, sm召唤指令备注（SpawnMob npc召唤指令）");
+                args.Player.SendInfoMessage("/npc toggle <解救npc名 或 猫/狗/兔 >, 切换NPC解救状态");
+                args.Player.SendInfoMessage("/npc clear <NPC名>, 移除一个NPC");
                 return;
             }
 
@@ -1050,17 +1057,17 @@ namespace Plugin
                     li2 = new List<string>();
 
                     li = NPC.boughtCat ? li1 : li2;
-                    li.Add("猫");
+                    li.Add("猫咪");
 
                     li = NPC.boughtDog ? li1 : li2;
-                    li.Add("狗");
+                    li.Add("狗狗");
 
                     li = NPC.boughtBunny ? li1 : li2;
-                    li.Add("兔子");
+                    li.Add("兔兔");
                     if (li1.Count > 0)
-                        args.Player.SendInfoMessage("已购买：{0}", String.Join(", ", li1));
+                        args.Player.SendInfoMessage("已使用：{0}许可证", String.Join(", ", li1));
                     if (li2.Count > 0 )
-                        args.Player.SendInfoMessage("待购买：{0}", String.Join(", ", li2));
+                        args.Player.SendInfoMessage("待使用：{0}许可证", String.Join(", ", li2));
 
                     break;
 
@@ -1068,11 +1075,18 @@ namespace Plugin
                 case "toggle":
                     ToggleNPC(args);
                     break;
+                
+                // 移除一个npc
+                case "clear":
+                    ClearNPC(args);
+                    break;
             }
         }
 
         
-         /// <summary> 切换npc解救状态 </summary>
+         /// <summary>
+         /// 切换npc解救状态
+         /// </summary>
         private void ToggleNPC(CommandArgs args)
         {
             if (args.Parameters.Count < 2){
@@ -1098,7 +1112,7 @@ namespace Plugin
                         "税收官", 
                         "猫",
                         "狗",
-                        "兔子"
+                        "兔"
                     };
                     args.Player.SendInfoMessage("支持切换的NPC拯救/购买状态的有: ");
                     args.Player.SendInfoMessage("{0}", String.Join(", ", li));
@@ -1112,9 +1126,9 @@ namespace Plugin
                     NPC.savedAngler = !NPC.savedAngler;
                     TSPlayer.All.SendData(PacketTypes.WorldInfo);
                     if (NPC.savedAngler)
-                        args.Player.SendSuccessMessage("已标记 沉睡渔夫 为已解救");
+                        args.Player.SendSuccessMessage("沉睡渔夫 已解救");
                     else
-                        args.Player.SendSuccessMessage("已标记 渔夫 为未解救");
+                        args.Player.SendSuccessMessage("渔夫 已标记为 未解救");
                     break;
 
 
@@ -1125,9 +1139,9 @@ namespace Plugin
                     NPC.savedGoblin = !NPC.savedGoblin;
                     TSPlayer.All.SendData(PacketTypes.WorldInfo);
                     if (NPC.savedGoblin)
-                        args.Player.SendSuccessMessage("已标记 受缚哥布林 为已解救");
+                        args.Player.SendSuccessMessage("受缚哥布林 已解救");
                     else
-                        args.Player.SendSuccessMessage("已标记 哥布林工匠 为未解救");
+                        args.Player.SendSuccessMessage("哥布林工匠 已标记为 未解救");
                     break;
 
 
@@ -1139,9 +1153,9 @@ namespace Plugin
                     NPC.savedMech = !NPC.savedMech;
                     TSPlayer.All.SendData(PacketTypes.WorldInfo);
                     if (NPC.savedMech)
-                        args.Player.SendSuccessMessage("已标记 受缚机械师 为已解救");
+                        args.Player.SendSuccessMessage("受缚机械师 已解救");
                     else
-                        args.Player.SendSuccessMessage("已标记 机械师 为未解救");
+                        args.Player.SendSuccessMessage("机械师 已标记为 未解救");
                     break;
 
 
@@ -1152,9 +1166,9 @@ namespace Plugin
                     NPC.savedStylist = !NPC.savedStylist;
                     TSPlayer.All.SendData(PacketTypes.WorldInfo);
                     if (NPC.savedStylist)
-                        args.Player.SendSuccessMessage("已标记 被网住的发型师 为已解救");
+                        args.Player.SendSuccessMessage("被网住的发型师 已解救");
                     else
-                        args.Player.SendSuccessMessage("已标记 发型师 为未解救");
+                        args.Player.SendSuccessMessage("发型师 已标记为 未解救");
                     break;
 
 
@@ -1168,9 +1182,9 @@ namespace Plugin
                     NPC.savedBartender = !NPC.savedBartender;
                     TSPlayer.All.SendData(PacketTypes.WorldInfo);
                     if (NPC.savedBartender)
-                        args.Player.SendSuccessMessage("已标记 昏迷男子 为已解救");
+                        args.Player.SendSuccessMessage("昏迷男子 已解救");
                     else
-                        args.Player.SendSuccessMessage("已标记 酒馆老板 为未解救");
+                        args.Player.SendSuccessMessage("酒馆老板 已标记为 未解救");
                     break;
 
 
@@ -1181,9 +1195,9 @@ namespace Plugin
                     NPC.savedGolfer = !NPC.savedGolfer;
                     TSPlayer.All.SendData(PacketTypes.WorldInfo);
                     if (NPC.savedGolfer)
-                        args.Player.SendSuccessMessage("已标记 高尔夫球手 为已解救");
+                        args.Player.SendSuccessMessage("高尔夫球手 已解救");
                     else
-                        args.Player.SendSuccessMessage("已标记 高尔夫球手 为未解救");
+                        args.Player.SendSuccessMessage("高尔夫球手 已标记为 未解救");
                     break;
 
 
@@ -1194,9 +1208,9 @@ namespace Plugin
                     NPC.savedWizard = !NPC.savedWizard;
                     TSPlayer.All.SendData(PacketTypes.WorldInfo);
                     if (NPC.savedWizard)
-                        args.Player.SendSuccessMessage("已标记 受缚巫师 为已解救");
+                        args.Player.SendSuccessMessage("受缚巫师 已解救");
                     else
-                        args.Player.SendSuccessMessage("已标记 巫师 为未解救");
+                        args.Player.SendSuccessMessage("巫师 已标记为 未解救");
                     break;
 
 
@@ -1208,9 +1222,9 @@ namespace Plugin
                     NPC.savedTaxCollector = !NPC.savedTaxCollector;
                     TSPlayer.All.SendData(PacketTypes.WorldInfo);
                     if (NPC.savedTaxCollector)
-                        args.Player.SendSuccessMessage("已标记 痛苦亡魂 已净化");
+                        args.Player.SendSuccessMessage("痛苦亡魂 已净化");
                     else
-                        args.Player.SendSuccessMessage("已标记 税收官 为未解救");
+                        args.Player.SendSuccessMessage("税收官 已标记为 未解救");
                     break;
 
 
@@ -1222,7 +1236,7 @@ namespace Plugin
                     if (NPC.boughtCat)
                         args.Player.SendSuccessMessage("猫咪许可证 已生效");
                     else
-                        args.Player.SendSuccessMessage("已标记 猫咪许可证 为未购买");
+                        args.Player.SendSuccessMessage("猫咪许可证 已标记为 未使用");
                     break;
 
 
@@ -1234,26 +1248,126 @@ namespace Plugin
                     if (NPC.boughtDog)
                         args.Player.SendSuccessMessage("狗狗许可证 已生效");
                     else
-                        args.Player.SendSuccessMessage("已标记 狗狗许可证 为未购买");
+                        args.Player.SendSuccessMessage("狗狗许可证 已标记为 未使用");
                     break;
 
 
-                // 兔子
+                // 兔
                 case "兔子":
                 case "兔兔":
                 case "兔":
                 case "bunny":
+                case "rabbit":
                     NPC.boughtBunny = !NPC.boughtBunny;
                     TSPlayer.All.SendData(PacketTypes.WorldInfo);
                     if (NPC.boughtBunny)
                         args.Player.SendSuccessMessage("兔兔许可证 已生效");
                     else
-                        args.Player.SendSuccessMessage("已标记 兔兔许可证 为未购买");
+                        args.Player.SendSuccessMessage("兔兔许可证 已标记为 未使用");
                     break;
             }
         }
 
 
+         /// <summary>
+        /// 清理NPC
+        /// </summary>
+        private void ClearNPC(CommandArgs args)
+        {
+            if (args.Parameters.Count ==1)
+            {
+                args.Player.SendInfoMessage("语法不正确");
+                args.Player.SendInfoMessage("/npc clear <NPC名>, 清除指定NPC");
+                args.Player.SendInfoMessage("/npc clear, 清理敌怪但保留友善NPC");
+                return;
+            }
+
+            // 清除指定NPC/敌怪
+            switch ( args.Parameters[1].ToLowerInvariant() )
+            {
+                case "help":
+                    args.Player.SendInfoMessage("语法不正确");
+                    args.Player.SendInfoMessage("/npc clear <NPC名>, 清除指定NPC");
+                    args.Player.SendInfoMessage("/npc clear, 清理敌怪但保留友善NPC");
+                    break;
+
+                default:
+                    var npcs = TShock.Utils.GetNPCByIdOrName(args.Parameters[1]);
+                    if (npcs.Count == 0)
+                    {
+                        args.Player.SendErrorMessage("找不到对应的 NPC");
+                    }
+                    else if (npcs.Count > 1)
+                    {
+                        args.Player.SendMultipleMatchError(npcs.Select(n => $"{n.FullName}({n.type})"));
+                    }
+                    else
+                    {
+                        var npc = npcs[0];
+                        args.Player.SendSuccessMessage("清理了 {0} 个 {1}", ClearNPCByID(npc.netID), npc.FullName);
+                    }
+                    break;
+            }
+        }
+
+         /// <summary>
+        /// 清理指定id的NPC
+        /// </summary>
+        private int ClearNPCByID(int npcID)
+        {
+            int cleared = 0;
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                if (Main.npc[i].active && Main.npc[i].netID==npcID )
+                {
+                    Main.npc[i].active = false;
+                    Main.npc[i].type = 0;
+                    TSPlayer.All.SendData(PacketTypes.NpcUpdate, "", i);
+                    cleared++;
+                }
+            }
+            return cleared;
+        }
+
+        static Dictionary<string, int> _NPCTypes = new Dictionary<string, int>
+        {
+            { "商人", 17 },
+            { "护士", 18 },
+            { "军火商", 19 },
+            { "树妖", 20 },
+            { "向导", 22 },
+            { "老人", 37 },
+            { "爆破专家", 38 },
+            { "服装商", 54 },
+            { "受缚哥布林", 105 },
+            { "受缚巫师", 106 },
+            { "哥布林工匠", 107 },
+            { "巫师", 108 },
+            { "受缚机械师", 123 },
+            { "机械师", 124 },
+            { "圣诞老人", 142 },
+            { "松露人", 160 },
+            { "蒸汽朋克人", 178 },
+            { "染料商", 207 },
+            { "派对女孩", 208 },
+            { "机器侠", 209 },
+            { "油漆工", 227 },
+            { "巫医", 228 },
+            { "海盗", 229 },
+            { "发型师", 353 },
+            { "受缚发型师", 354 },
+            { "旅商", 368 },
+            { "渔夫", 369 },
+            { "税收官", 441 },
+            { "骷髅商人", 453 },
+            { "酒馆老板", 550 },
+            { "高尔夫球手", 588 },
+            { "高尔夫球手待拯救", 589 },
+            { "动物学家", 633 },
+            { "公主", 663 },
+        };
+
+        # endregion
 
 
         // 获取秘密世界种子状态描述
@@ -1272,6 +1386,11 @@ namespace Plugin
                 if ( s != "")
                     s += ", ";
                 s += "05162021";
+            }
+            if(Main.dontStarveWorld){
+                if ( s != "")
+                    s += ", ";
+                s += "the constant";
             }
 
             if ( s != "")
@@ -1328,45 +1447,6 @@ namespace Plugin
             { "糖果", 7 },
             { "金星样式", 8 },
             { "紫色的三重月亮", 9 }
-        };
-
-
-        static Dictionary<string, int> _NPCTypes = new Dictionary<string, int>
-        {
-            { "商人", 17 },
-            { "护士", 18 },
-            { "军火商", 19 },
-            { "树妖", 20 },
-            { "向导", 22 },
-            { "老人", 37 },
-            { "爆破专家", 38 },
-            { "服装商", 54 },
-            { "受缚哥布林", 105 },
-            { "受缚巫师", 106 },
-            { "哥布林工匠", 107 },
-            { "巫师", 108 },
-            { "受缚机械师", 123 },
-            { "机械师", 124 },
-            { "圣诞老人", 142 },
-            { "松露人", 160 },
-            { "蒸汽朋克人", 178 },
-            { "染料商", 207 },
-            { "派对女孩", 208 },
-            { "机器侠", 209 },
-            { "油漆工", 227 },
-            { "巫医", 228 },
-            { "海盗", 229 },
-            { "发型师", 353 },
-            { "受缚发型师", 354 },
-            { "旅商", 368 },
-            { "渔夫", 369 },
-            { "税收官", 441 },
-            { "骷髅商人", 453 },
-            { "酒馆老板", 550 },
-            { "高尔夫球手", 588 },
-            { "高尔夫球手待拯救", 589 },
-            { "动物学家", 633 },
-            { "公主", 663 },
         };
 
 

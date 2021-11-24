@@ -5,9 +5,22 @@
 /wm name <世界名>，修改世界名字;
 /wm seed <种子>，修改世界种子;
 /wm 0516，开启/关闭 05162020 秘密世界;
+/wm 05162021，开启/关闭 05162021 秘密世界;
+/wm dst，开启/关闭 the constant 秘密世界;
 /wm ftw，开启/关闭 for the worthy 秘密世界;
+
 /moonphase <月相>，修改月相;
 /moonstyle <月亮样式>，修改月亮样式;
+/bossinfo, 查看boss进度,任何用户均有权限执行
+
+/boss info, 查看boss进度
+/boss sb, sb 召唤指令备注
+/boss toggle <boss名>, 切换boss击败状态
+
+/npc info, 查看npc解救情况
+/npc sm, sm召唤指令备注（SpawnMob npc召唤指令）
+/npc toggle <解救npc名 或 猫/狗/兔 >, 切换NPC解救状态
+/npc clear <NPC名>, 移除一个NPC
 ```
 
 <br/>
@@ -20,6 +33,8 @@
 /group addperm default worldmodify
 /group addperm default moonphase
 /group addperm default moonstyle
+/group addperm default bossmanage
+/group addperm default npcmanage
 ```
 
 <br/>
