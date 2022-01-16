@@ -1,8 +1,10 @@
-﻿using System;
+﻿using System.Xml.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Terraria;
+using Terraria.GameContent.Bestiary;
 using TerrariaApi.Server;
 using TShockAPI;
 using Terraria.GameContent.Creative;
@@ -33,6 +35,7 @@ namespace Plugin
             Commands.ChatCommands.Add(new Command(new List<string>() {"bossmanage"}, BossManage, "bossmanage", "bm", "boss" ) { HelpText = "boss管理"});
             Commands.ChatCommands.Add(new Command(new List<string>() {"npcmanage"}, NpcManage, "npcmanage", "nm", "npc") { HelpText = "npc管理"});
             Commands.ChatCommands.Add(new Command(new List<string>() {""}, BossInfo, "bossinfo", "bi") { HelpText = "boss进度信息"});
+            Commands.ChatCommands.Add(new Command(new List<string>() {""}, ReliveNPC, "npcrelive", "relivenpc") { HelpText = "复活NPC"});
         }
 
 
@@ -140,7 +143,7 @@ namespace Plugin
                         args.Player.SendSuccessMessage("已开启 05162020 秘密世界（醉酒世界 / DrunkWorld）");
                     }
                     break;
-                
+
 
                 // 10周年庆典,tenthAnniversaryWorld
                 case "5162021":
@@ -176,7 +179,7 @@ namespace Plugin
                         args.Player.SendSuccessMessage("已开启 for the worthy 秘密世界");
                     }
                     break;
-                
+
 
                 //  饥荒联动
                 case "eye":
@@ -301,7 +304,7 @@ namespace Plugin
         }
 
         # region Boss 管理
-             
+
         /// <summary>
         /// BOSS管理
         /// </summary>
@@ -370,13 +373,13 @@ namespace Plugin
                     args.Player.SendInfoMessage("/sb " + String.Join(", /sb ", part2));
                     args.Player.SendInfoMessage("/sb " + String.Join(", /sb ", part3));
                     break;
-                                
+
 
                 // 查看boss进度
                 case "info":
                     BossInfo(args);
                     break;
-                
+
 
                 // 切换boss击败状态
                 case "toggle":
@@ -402,7 +405,7 @@ namespace Plugin
                 default:
                     args.Player.SendErrorMessage("语法不正确！，请使用 /boss toggle help, 进行查询");
                     break;
-                
+
                 case "help":
                     string [] li1 = {
                         "史莱姆王",
@@ -415,7 +418,7 @@ namespace Plugin
                         "血肉墙"
                     };
 
-                    string [] li2 = {    
+                    string [] li2 = {
                         "毁灭者",
                         "双子魔眼",
                         "机械骷髅王",
@@ -427,9 +430,9 @@ namespace Plugin
                         "拜月教邪教徒",
                         "月亮领主"
                     };
-                    
-                    string [] li3 = { 
-                        "小丑",
+
+                    string [] li3 = {
+                        // "小丑",
                         "哥布林军队",
                         "海盗入侵",
                         "火星暴乱",
@@ -665,7 +668,7 @@ namespace Plugin
                         args.Player.SendSuccessMessage("已标记 光之女皇 为未击败");
                     break;
 
-                
+
                 // 猪龙鱼公爵
                 case "猪龙鱼公爵":
                 case "猪鲨":
@@ -714,16 +717,16 @@ namespace Plugin
                     break;
 
 
-                // 小丑
-                case "小丑":
-                case "clown":
-                    NPC.downedClown = !NPC.downedClown;
-                    TSPlayer.All.SendData(PacketTypes.WorldInfo);
-                    if (NPC.downedClown)
-                        args.Player.SendSuccessMessage("已标记 小丑 为已击败");
-                    else
-                        args.Player.SendSuccessMessage("已标记 小丑 为未击败");
-                    break;
+                // // 小丑
+                // case "小丑":
+                // case "clown":
+                //     NPC.downedClown = !NPC.downedClown;
+                //     TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                //     if (NPC.downedClown)
+                //         args.Player.SendSuccessMessage("已标记 小丑 为已击败");
+                //     else
+                //         args.Player.SendSuccessMessage("已标记 小丑 为未击败");
+                //     break;
 
 
                 // 哥布林军队
@@ -949,13 +952,13 @@ namespace Plugin
 
             li2.Add(CFlag(NPC.downedQueenSlime) + "史莱姆皇后");
             li2.Add(CFlag(NPC.downedEmpressOfLight) + "光之女皇");
-            
+
             li2.Add(CFlag(NPC.downedFishron) + "猪龙鱼公爵");
             li2.Add(CFlag(NPC.downedAncientCultist) + "拜月教邪教徒");
             li2.Add(CFlag(NPC.downedMoonlord) + "月亮领主");
 
 
-            li3.Add(CFlag(NPC.downedClown) + "小丑");
+            // li3.Add(CFlag(NPC.downedClown) + "小丑");
             li3.Add(CFlag(NPC.downedGoblins) + "哥布林军队");
             li3.Add(CFlag(NPC.downedPirates) + "海盗入侵");
             li3.Add(CFlag(NPC.downedMartians) + "火星暴乱");
@@ -994,6 +997,8 @@ namespace Plugin
                 args.Player.SendInfoMessage("/npc sm, sm召唤指令备注（SpawnMob npc召唤指令）");
                 args.Player.SendInfoMessage("/npc toggle <解救npc名 或 猫/狗/兔 >, 切换NPC解救状态");
                 args.Player.SendInfoMessage("/npc clear <NPC名>, 移除一个NPC");
+                args.Player.SendInfoMessage("/npc unique, NPC去重");
+                args.Player.SendInfoMessage("/npc relive, 复活来过的NPC");
                 return;
             }
 
@@ -1004,7 +1009,7 @@ namespace Plugin
             {
                 default:
                     args.Player.SendErrorMessage("语法不正确！");
-                    break;
+                    return;
 
                 case "sm":
                 case "spawn":
@@ -1017,7 +1022,7 @@ namespace Plugin
                     args.Player.SendInfoMessage("以下是 npc 生成指令, sm = spawnmob：");
                     args.Player.SendInfoMessage(String.Join(", ", newStrs));
                     break;
-                
+
 
                 // 查看npc解救情况
                 case "info":
@@ -1075,15 +1080,26 @@ namespace Plugin
                 case "toggle":
                     ToggleNPC(args);
                     break;
-                
+
                 // 移除一个npc
                 case "clear":
                     ClearNPC(args);
                     break;
+
+                // NPC去重
+                case "unique":
+                    UniqueNPC(args);
+                    break;
+
+                // NPC重生
+                case "relive":
+                    ReliveNPC(args);
+                    break;
+
             }
         }
 
-        
+
          /// <summary>
          /// 切换npc解救状态
          /// </summary>
@@ -1099,7 +1115,7 @@ namespace Plugin
                 default:
                     args.Player.SendErrorMessage("语法不正确！，请使用 /npc toggle help, 进行查询");
                     break;
-                
+
                 case "help":
                     string [] li = {
                         "渔夫",
@@ -1109,7 +1125,7 @@ namespace Plugin
                         "酒馆老板",
                         "高尔夫球手",
                         "巫师",
-                        "税收官", 
+                        "税收官",
                         "猫",
                         "狗",
                         "兔"
@@ -1309,6 +1325,152 @@ namespace Plugin
                     break;
             }
         }
+
+        // NPC去重
+        private void UniqueNPC(CommandArgs args)
+        {
+            // List<int> ids = new List<int>() {22,33};
+            List<int> founds = new List<int>();
+            int num = 0;
+            int cleared = 0;
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                if( !Main.npc[i].active )
+                    continue;
+
+                // 453骷髅商人
+                if( !Main.npc[i].townNPC && Main.npc[i].type!=453 )
+                    continue;
+
+                num = Main.npc[i].type;
+                if( founds.Contains(num) )
+                {
+                    Main.npc[i].active = false;
+                    Main.npc[i].type = 0;
+                    TSPlayer.All.SendData(PacketTypes.NpcUpdate, "", i);
+                    cleared++;
+                } else {
+                    founds.Add( num );
+                }
+            }
+
+            if( cleared>0 ){
+                args.Player.SendSuccessMessage($"已清除 {cleared} 个重复的NPC");
+            } else {
+                args.Player.SendInfoMessage("没有可清除的 重复的NPC");
+            }
+        }
+
+        // NPC重生
+        private void ReliveNPC(CommandArgs args)
+        {
+            List<int> found = new List<int>();
+
+            // 解救状态
+            // 渔夫
+            if( NPC.savedAngler )
+                found.Add(369);
+
+            // 哥布林
+            if( NPC.savedGoblin )
+                found.Add(107);
+
+            // 机械师
+            if( NPC.savedMech )
+                found.Add(124);
+
+            // 发型师
+            if( NPC.savedStylist )
+                found.Add(353);
+
+            // 酒馆老板
+            if( NPC.savedBartender )
+                found.Add(550);
+
+            // 高尔夫球手
+            if( NPC.savedGolfer )
+                found.Add(588);
+
+            // 巫师
+            if( NPC.savedWizard )
+                found.Add(108);
+
+            // 税收管
+            if( NPC.savedTaxCollector )
+                found.Add(441);
+
+            // 猫
+            if( NPC.boughtCat )
+                found.Add(637);
+
+            // 狗
+            if( NPC.boughtDog )
+                found.Add(638);
+
+            // 兔
+            if( NPC.boughtBunny )
+                found.Add(656);
+
+            // 怪物图鉴解锁情况
+            List<int> remains = new List<int>() {
+                22, //向导
+                19, //军火商
+                54, //服装商
+                38, //爆破专家
+                20, //树妖
+                207, //染料商
+                17, //商人
+                18, //护士
+                227, //油漆工
+                208, //派对女孩
+                228, //巫医
+                633, //动物学家
+                209, //机器侠
+                229, //海盗
+                178, //蒸汽朋克人
+                160, //松露人
+                663 //公主
+
+                // 453, //骷髅商人
+                // 368, //旅商
+                // 37, // 老人
+            };
+            // 142, //圣诞老人
+            if( Main.xMas )
+                remains.Add(142);
+
+            foreach (int npcID1 in remains)
+            {
+                if( DidDiscoverBestiaryEntry( npcID1 ) )
+                    found.Add(npcID1);
+            }
+
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                if( !Main.npc[i].active || !Main.npc[i].townNPC )
+                    continue;
+
+                found.Remove(Main.npc[i].type);
+            }
+
+            // 生成npc
+            foreach (int npcID in found)
+            {
+				NPC npc = new NPC();
+				npc.SetDefaults(npcID);
+				TSPlayer.Server.SpawnNPC(npc.type, npc.FullName, 1, args.Player.TileX, args.Player.TileY);
+            }
+
+            if( found.Count>0 ){
+                args.Player.SendSuccessMessage($"已复活 {found.Count} 个NPC");
+            } else {
+                args.Player.SendInfoMessage("入住过的NPC都活着");
+            }
+        }
+        public static bool DidDiscoverBestiaryEntry(int npcId)
+		{
+			return Main.BestiaryDB.FindEntryByNPCID(npcId).UIInfoProvider.GetEntryUICollectionInfo().UnlockState > BestiaryEntryUnlockState.NotKnownAtAll_0;
+		}
 
          /// <summary>
         /// 清理指定id的NPC

@@ -11,7 +11,6 @@
 
 /moonphase <月相>，修改月相;
 /moonstyle <月亮样式>，修改月亮样式;
-/bossinfo, 查看boss进度,任何用户均有权限执行
 
 /boss info, 查看boss进度
 /boss sb, sb 召唤指令备注
@@ -21,6 +20,11 @@
 /npc sm, sm召唤指令备注（SpawnMob npc召唤指令）
 /npc toggle <解救npc名 或 猫/狗/兔 >, 切换NPC解救状态
 /npc clear <NPC名>, 移除一个NPC
+/npc unique, 移除重复NPC
+/npc relive, 复活入住过的NPC（有怪物图鉴记录）
+
+/bossinfo, 查看boss进度,任何用户均有权限执行
+/relivenpc, 复活入住过的NPC（分配 npcrelive权限可用）
 ```
 
 <br/>
@@ -35,6 +39,7 @@
 /group addperm default moonstyle
 /group addperm default bossmanage
 /group addperm default npcmanage
+/group addperm default npcrelive
 ```
 
 <br/>
