@@ -35,7 +35,7 @@ namespace Plugin
             Commands.ChatCommands.Add(new Command(new List<string>() {"bossmanage"}, BossManage, "bossmanage", "bm", "boss" ) { HelpText = "boss管理"});
             Commands.ChatCommands.Add(new Command(new List<string>() {"npcmanage"}, NpcManage, "npcmanage", "nm", "npc") { HelpText = "npc管理"});
             Commands.ChatCommands.Add(new Command(new List<string>() {""}, BossInfo, "bossinfo", "bi") { HelpText = "boss进度信息"});
-            Commands.ChatCommands.Add(new Command(new List<string>() {""}, ReliveNPC, "npcrelive", "relivenpc") { HelpText = "复活NPC"});
+            Commands.ChatCommands.Add(new Command(new List<string>() {"relivenpc"}, ReliveNPC, "npcrelive", "relivenpc") { HelpText = "复活NPC"});
         }
 
 
@@ -1459,10 +1459,22 @@ namespace Plugin
 				NPC npc = new NPC();
 				npc.SetDefaults(npcID);
 				TSPlayer.Server.SpawnNPC(npc.type, npc.FullName, 1, args.Player.TileX, args.Player.TileY);
+
+
+            }
+
+            // 找家
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                if( !Main.npc[i].active || !Main.npc[i].townNPC )
+                    continue;
+
+                if( found.Contains(Main.npc[i].type) )
+                    WorldGen.QuickFindHome(i);
             }
 
             if( found.Count>0 ){
-                args.Player.SendSuccessMessage($"已复活 {found.Count} 个NPC");
+				TSPlayer.All.SendInfoMessage($"{args.Player.Name} 复活了 {found.Count}个 NPC");
             } else {
                 args.Player.SendInfoMessage("入住过的NPC都活着");
             }
