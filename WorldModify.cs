@@ -34,10 +34,10 @@ namespace Plugin
             Commands.ChatCommands.Add(new Command(new List<string>() {"moonstyle"}, ChangeMoonStyle, "moonstyle", "ms") { HelpText = "月亮样式管理"});
             Commands.ChatCommands.Add(new Command(new List<string>() {"bossmanage"}, BossManage, "bossmanage", "bm", "boss" ) { HelpText = "boss管理"});
             Commands.ChatCommands.Add(new Command(new List<string>() {"npcmanage"}, NpcManage, "npcmanage", "nm", "npc") { HelpText = "npc管理"});
-            
+
             Commands.ChatCommands.Add(new Command(new List<string>() {"relivenpc"}, ReliveNPC, "relivenpc") { HelpText = "复活NPC"});
-            Commands.ChatCommands.Add(new Command(new List<string>() {""}, BossInfo, "bossinfo", "bi") { HelpText = "boss进度信息"});
-            Commands.ChatCommands.Add(new Command(new List<string>() {""}, WorldInfo, "worldinfo", "wi") { HelpText = "世界信息"});
+            Commands.ChatCommands.Add(new Command(new List<string>() {"bossinfo"}, BossInfo, "bossinfo", "bi") { HelpText = "boss进度信息"});
+            Commands.ChatCommands.Add(new Command(new List<string>() {"worldinfo"}, WorldInfo, "worldinfo", "wi") { HelpText = "世界信息"});
         }
 
 
@@ -904,7 +904,7 @@ namespace Plugin
                     op.SendErrorMessage("暂时不支持标记 双足翼龙");
                     break;
 
-                
+
                 default:
                     // op.SendErrorMessage("语法不正确！，请使用 /boss toggle help, 进行查询");
                     return false;
@@ -914,11 +914,16 @@ namespace Plugin
 
         private void BossInfo(CommandArgs args)
         {
-            string CFlag(bool foo){
+            ShowBossInfo(args.Player);
+        }
+
+        private void ShowBossInfo(TSPlayer op)
+        {
+            string CFlag(bool foo, string fstr){
                 if (foo)
-                    return "✔";
+                    return $"[c/96FF96:✔{fstr}]";
                 else
-                    return "-";
+                    return $"-{fstr}";
             }
 
             List<string> li = new List<string>();
@@ -926,65 +931,65 @@ namespace Plugin
             List<string> li2 = new List<string>();
             List<string> li3 = new List<string>();
 
-            li1.Add(CFlag(NPC.downedSlimeKing) + "史莱姆王");
-            li1.Add(CFlag(NPC.downedBoss1) + "克苏鲁之眼");
-            li1.Add(CFlag(NPC.downedDeerclops ) + "鹿角怪");
+            li1.Add(CFlag(NPC.downedSlimeKing, "史莱姆王") );
+            li1.Add(CFlag(NPC.downedBoss1, "克苏鲁之眼") );
 
             string boss2Name = "";
             if(Main.drunkWorld)
                 boss2Name = "世界吞噬怪 或 克苏鲁之脑";
             else
                 boss2Name = WorldGen.crimson ? "克苏鲁之脑":"世界吞噬怪";
-            li1.Add(CFlag(NPC.downedBoss2) + boss2Name);
+            li1.Add(CFlag(NPC.downedBoss2, boss2Name));
 
-            li1.Add(CFlag(NPC.downedBoss3) + "骷髅王");
-            li1.Add(CFlag(NPC.downedQueenBee) + "蜂王");
-            li1.Add(CFlag(Main.hardMode) + "血肉墙");
-
-
-            li2.Add(CFlag(NPC.downedMechBoss1) + "毁灭者");
-            li2.Add(CFlag(NPC.downedMechBoss2) + "双子魔眼");
-            li2.Add(CFlag(NPC.downedMechBoss3) + "机械骷髅王");
-
-            li2.Add(CFlag(NPC.downedPlantBoss) + "世纪之花");
-            li2.Add(CFlag(NPC.downedGolemBoss) + "石巨人");
-
-            li2.Add(CFlag(NPC.downedQueenSlime) + "史莱姆皇后");
-            li2.Add(CFlag(NPC.downedEmpressOfLight) + "光之女皇");
-
-            li2.Add(CFlag(NPC.downedFishron) + "猪龙鱼公爵");
-            li2.Add(CFlag(NPC.downedAncientCultist) + "拜月教邪教徒");
-            li2.Add(CFlag(NPC.downedMoonlord) + "月亮领主");
+            li1.Add(CFlag(NPC.downedDeerclops , "鹿角怪") );
+            li1.Add(CFlag(NPC.downedBoss3, "骷髅王") );
+            li1.Add(CFlag(NPC.downedQueenBee, "蜂王") );
+            li1.Add(CFlag(Main.hardMode, "血肉墙") );
 
 
-            // li3.Add(CFlag(NPC.downedClown) + "小丑");
-            li3.Add(CFlag(NPC.downedGoblins) + "哥布林军队");
-            li3.Add(CFlag(NPC.downedPirates) + "海盗入侵");
-            li3.Add(CFlag(NPC.downedMartians) + "火星暴乱");
+            li2.Add(CFlag(NPC.downedMechBoss1, "毁灭者") );
+            li2.Add(CFlag(NPC.downedMechBoss2, "双子魔眼") );
+            li2.Add(CFlag(NPC.downedMechBoss3, "机械骷髅王") );
 
-            li3.Add(CFlag(NPC.downedHalloweenTree) + "哀木");
-            li3.Add(CFlag(NPC.downedHalloweenKing) + "南瓜王");
+            li2.Add(CFlag(NPC.downedPlantBoss, "世纪之花") );
+            li2.Add(CFlag(NPC.downedGolemBoss, "石巨人") );
 
-            li3.Add(CFlag(NPC.downedChristmasIceQueen) + "冰雪女王");
-            li3.Add(CFlag(NPC.downedChristmasTree) + "常绿尖叫怪");
-            li3.Add(CFlag(NPC.downedChristmasSantank) + "圣诞坦克");
+            li2.Add(CFlag(NPC.downedQueenSlime, "史莱姆皇后") );
+            li2.Add(CFlag(NPC.downedEmpressOfLight, "光之女皇") );
 
-            li3.Add(CFlag(NPC.downedTowerSolar) + "日耀柱");
-            li3.Add(CFlag(NPC.downedTowerVortex) + "星旋柱");
-            li3.Add(CFlag(NPC.downedTowerNebula) + "星云柱");
-            li3.Add(CFlag(NPC.downedTowerStardust) + "星尘柱");
+            li2.Add(CFlag(NPC.downedFishron, "猪龙鱼公爵") );
+            li2.Add(CFlag(NPC.downedAncientCultist, "拜月教邪教徒") );
+            li2.Add(CFlag(NPC.downedMoonlord, "月亮领主") );
 
 
-            args.Player.SendInfoMessage("肉前：{0}", String.Join(", ", li1));
-            args.Player.SendInfoMessage("肉后：{0}", String.Join(", ", li2));
-            args.Player.SendInfoMessage("事件：{0}", String.Join(", ", li3));
+            // li3.Add(CFlag(NPC.downedClown, "小丑") );
+            li3.Add(CFlag(NPC.downedGoblins, "哥布林军队") );
+            li3.Add(CFlag(NPC.downedPirates, "海盗入侵") );
+            li3.Add(CFlag(NPC.downedMartians, "火星暴乱") );
+
+            li3.Add(CFlag(NPC.downedHalloweenTree, "哀木") );
+            li3.Add(CFlag(NPC.downedHalloweenKing, "南瓜王") );
+
+            li3.Add(CFlag(NPC.downedChristmasIceQueen, "冰雪女王") );
+            li3.Add(CFlag(NPC.downedChristmasTree, "常绿尖叫怪") );
+            li3.Add(CFlag(NPC.downedChristmasSantank, "圣诞坦克") );
+
+            li3.Add(CFlag(NPC.downedTowerSolar, "日耀柱") );
+            li3.Add(CFlag(NPC.downedTowerVortex, "星旋柱") );
+            li3.Add(CFlag(NPC.downedTowerNebula, "星云柱") );
+            li3.Add(CFlag(NPC.downedTowerStardust, "星尘柱") );
+
+
+            op.SendInfoMessage("肉前：{0}", String.Join(", ", li1));
+            op.SendInfoMessage("肉后：{0}", String.Join(", ", li2));
+            op.SendInfoMessage("事件：{0}", String.Join(", ", li3));
         }
 
         # endregion
 
 
         # region worldinfo
-        
+
         private void WorldInfo(CommandArgs args)
         {
             ShowWorldInfo(args.Player);
@@ -993,19 +998,18 @@ namespace Plugin
         private void ShowWorldInfo(TSPlayer op, bool isSuperAdmin=false)
         {
             op.SendInfoMessage("当前世界信息");
-            op.SendInfoMessage("名称: {0}", Main.worldName);
-            op.SendInfoMessage("大小: {0}（{1}x{2}）", Main.ActiveWorldFileData.WorldSizeName, Main.maxTilesX, Main.maxTilesY);
+            op.SendInfoMessage("名　　称: {0}", Main.worldName);
+            op.SendInfoMessage("大　　小: {0}（{1}x{2}）", Main.ActiveWorldFileData.WorldSizeName, Main.maxTilesX, Main.maxTilesY);
             op.SendInfoMessage("ID: {0}", Main.worldID);
-            op.SendInfoMessage("难度: {0}", _worldModes.Keys.ElementAt(Main.GameMode));
-            op.SendInfoMessage("种子: {0}（{1}）", WorldGen.currentWorldSeed, Main.ActiveWorldFileData.GetFullSeedText());
-
-            if(this.GetSecretWorldDescription()!="")
-                op.SendInfoMessage(this.GetSecretWorldDescription());
-
-            op.SendInfoMessage(this.GetCorruptionDescription());
+            op.SendInfoMessage("难　　度: {0}", _worldModes.Keys.ElementAt(Main.GameMode));
+            op.SendInfoMessage("种　　子: {0}（{1}）", WorldGen.currentWorldSeed, Main.ActiveWorldFileData.GetFullSeedText());
+            GetSecretWorldDescription(op);
+            GetCorruptionDescription(op);
             op.SendInfoMessage("困难模式: {0}", (Main.ActiveWorldFileData.IsHardMode ? "是" : "否"));
-            op.SendInfoMessage("月相: {0}", _moonPhases.Keys.ElementAt(Main.moonPhase));
+            op.SendInfoMessage("月　　相: {0}", _moonPhases.Keys.ElementAt(Main.moonPhase));
             op.SendInfoMessage("月亮样式: {0}", _moonTypes.Keys.ElementAt(Main.moonType));
+            
+            ShowBossInfo(op);
         }
         # endregion
 
@@ -1021,12 +1025,12 @@ namespace Plugin
             if(args.Parameters.Count<string>()==0 || args.Parameters[0].ToLowerInvariant()=="help")
             {
                 op.SendInfoMessage("/npc info, 查看npc解救情况");
-                op.SendInfoMessage("/npc sm, sm召唤指令备注（SpawnMob npc召唤指令）");
-                op.SendInfoMessage("/npc clear <NPC名>, 移除一个NPC");
-                op.SendInfoMessage("/npc unique, NPC去重");
-                op.SendInfoMessage("/npc relive, 复活来过的NPC");
                 op.SendInfoMessage("/npc <解救npc名 或 猫/狗/兔 >, 切换NPC解救状态");
                 op.SendInfoMessage("/npc list, 查看支持切换解救状态的NPC名");
+                op.SendInfoMessage("/npc clear <NPC名>, 移除一个NPC");
+                op.SendInfoMessage("/npc unique, NPC去重");
+                op.SendInfoMessage("/npc relive, 复活NPC（根据怪物图鉴记录）");
+                op.SendInfoMessage("/npc sm, sm召唤指令备注（SpawnMob npc召唤指令）");
                 return;
             }
 
@@ -1491,7 +1495,7 @@ namespace Plugin
                     names.Add(npc.FullName);
                 }
             }
- 
+
             // 找家
             // for (int i = 0; i < Main.maxNPCs; i++)
             // {
@@ -1575,47 +1579,44 @@ namespace Plugin
 
 
         // 获取秘密世界种子状态描述
-        private string GetSecretWorldDescription()
+        private void GetSecretWorldDescription(TSPlayer op)
         {
-            string s = "";
-            if(Main.getGoodWorld){
-                s = "for the worthy";
-            }
-            if(Main.drunkWorld){
-                if ( s != "")
-                    s += ", ";
-                s += "05162020";
-            }
-            if(Main.tenthAnniversaryWorld){
-                if ( s != "")
-                    s += ", ";
-                s += "05162021";
-            }
-            if(Main.dontStarveWorld){
-                if ( s != "")
-                    s += ", ";
-                s += "the constant";
-            }
+            List<string> ss = new List<string>();
 
-            if ( s != "")
-                s = "秘密世界: " + s;
+            if(Main.getGoodWorld)
+                ss.Add("for the worthy");
 
-            return s;
+            if(Main.drunkWorld)
+                ss.Add("05162020");
+
+            if(Main.tenthAnniversaryWorld)
+                ss.Add("05162021");
+
+            if(Main.dontStarveWorld)
+                ss.Add("the constant");
+
+            if ( ss.Count>0 )
+                op.SendInfoMessage($"秘密世界: { String.Join(", ", ss) }");
         }
 
 
         // 获取腐化类型描述
-        private string GetCorruptionDescription()
+        private void GetCorruptionDescription(TSPlayer op)
         {
             // Main.ActiveWorldFileData.HasCrimson
             // Main.ActiveWorldFileData.HasCorruption
-            if(Main.drunkWorld)
-                return $"腐化类型: 腐化和猩红（05162020）（已摧毁 {WorldGen.heartCount }个猩红之心  {WorldGen.shadowOrbCount}个暗影珠）";
+            string more(){
+                return "（已摧毁 {WorldGen.heartCount }个猩红之心  {WorldGen.shadowOrbCount}个暗影珠）";
+            }
+            if(Main.drunkWorld){
+                op.SendInfoMessage($"腐化类型: 腐化和猩红（05162020）{more()}");
+                return;
+            }
 
             if(WorldGen.crimson)
-                return $"腐化类型: 猩红（已摧毁 {WorldGen.heartCount } 个猩红之心）";
+                op.SendInfoMessage($"腐化类型: 猩红 {more()}");
             else
-                return $"腐化类型: 腐化（已摧毁 {WorldGen.shadowOrbCount} 个暗影珠）";
+                op.SendInfoMessage($"腐化类型: 腐化 {more()}");
         }
 
         static Dictionary<string, int> _worldModes = new Dictionary<string, int>

@@ -3,28 +3,40 @@
 ```
 /wm info，查看世界信息;
 /wm name <世界名>，修改世界名字;
+/wm id <id>，修改世界ID;
 /wm seed <种子>，修改世界种子;
+/wm research, 解锁全物品研究
+
 /wm 0516，开启/关闭 05162020 秘密世界;
 /wm 05162021，开启/关闭 05162021 秘密世界;
-/wm dst，开启/关闭 the constant 秘密世界;
 /wm ftw，开启/关闭 for the worthy 秘密世界;
+/wm dst，开启/关闭 the constant 秘密世界;
 
-/moonphase <月相>，修改月相;
+
+/moon <月相>，修改月相;
 /moonstyle <月亮样式>，修改月亮样式;
 
-/boss info, 查看boss进度
-/boss sb, sb 召唤指令备注
-/boss toggle <boss名>, 切换boss击败状态
 
-/npc info, 查看npc解救情况
-/npc sm, sm召唤指令备注（SpawnMob npc召唤指令）
-/npc toggle <解救npc名 或 猫/狗/兔 >, 切换NPC解救状态
-/npc clear <NPC名>, 移除一个NPC
-/npc unique, 移除重复NPC
-/npc relive, 复活入住过的NPC（有怪物图鉴记录）
+/boss help, boss管理;
+/boss info, 查看boss进度;
+/boss <boss名>, 切换boss击败状态;
+/boss list, 查看支持切换击败状态的boss名;
+/boss sb, sb 召唤指令备注;
 
-/bossinfo, 查看boss进度,任何用户均有权限执行
-/relivenpc, 复活入住过的NPC（分配 npcrelive权限可用）
+
+/npc help, npc管理;
+/npc info, 查看npc解救情况;
+/npc <解救npc名 或 猫/狗/兔 >, 切换NPC解救状态;
+/npc list, 查看支持切换击败状态的boss名;
+/npc clear <NPC名>, 移除一个NPC;
+/npc unique, 移除重复NPC;
+/npc relive, 复活NPC（根据怪物图鉴记录）;
+/npc sm, sm召唤指令备注（SpawnMob npc召唤指令）;
+
+
+/worldinfo, 查看世界信息（分配权限后可用）;
+/bossinfo, 查看boss进度（分配权限后可用）;
+/relivenpc, 复活入住过的NPC（分配权限后可用）;
 ```
 
 <br/>
@@ -39,7 +51,10 @@
 /group addperm default moonstyle
 /group addperm default bossmanage
 /group addperm default npcmanage
-/group addperm default npcrelive
+
+/group addperm default relivenpc
+/group addperm default bossinfo
+/group addperm default worldinfo
 ```
 
 <br/>
