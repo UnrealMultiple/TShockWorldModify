@@ -52,6 +52,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="WorldModify.cs" />
+    <Compile Include="Compatible.cs" />
+    <Compile Include="BossHelper.cs" />
+    <Compile Include="NpcHelper.cs" />
+    <Compile Include="BestiaryHelper.cs" />
+    <Compile Include="ResearchHelper.cs" />
+    <Compile Include="utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
