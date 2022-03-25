@@ -13,9 +13,9 @@
 /wm ntb，开启/关闭 not the bees 秘密世界（1.4.0.5无此选项）；
 /wm dst，开启/关闭 the constant 秘密世界（1.4.0.5无此选项）；
 
-/wm research, 解锁 全物品研究；
-/wm bestiary, 解锁 怪物图鉴全收集；
-/wm bestiary false,  重置 怪物图鉴；
+/wm research，解锁 全物品研究；
+/wm bestiary，解锁 怪物图鉴全收集；
+/wm bestiary false， 重置 怪物图鉴；
 
 /wm spawn，查看 出生点；
 /wm dungeon，查看 地牢点；
@@ -28,26 +28,26 @@
 /moonstyle <月亮样式>，修改月亮样式（分配 wm.moonstyle 权限后可用）；
 
 
-/boss help, boss管理（分配 wm.boss 权限后可用）；
-/boss info, 查看boss进度；
-/boss <boss名>, 切换boss击败状态；
-/boss list, 查看支持切换击败状态的boss名；
-/boss sb, sb 召唤指令备注；
+/boss help，boss管理（分配 wm.boss 权限后可用）；
+/boss info，查看boss进度；
+/boss <boss名>，切换boss击败状态；
+/boss list，查看支持切换击败状态的boss名；
+/boss sb，sb 召唤指令备注；
 
 
-/npc help, npc管理（分配 wm.npc 权限后可用）；
-/npc info, 查看npc解救情况；
-/npc <解救npc名 或 猫/狗/兔 >, 切换NPC解救状态；
-/npc list, 查看支持切换击败状态的boss名；
-/npc clear <NPC名>, 移除一个NPC；
-/npc unique, 移除重复NPC；
-/npc relive, 复活NPC（根据怪物图鉴记录）；
-/npc sm, sm召唤指令备注（SpawnMob npc召唤指令）；
+/npc help，npc管理（分配 wm.npc 权限后可用）；
+/npc info，查看npc解救情况；
+/npc <解救npc名 或 猫/狗/兔 >，切换NPC解救状态；
+/npc list，查看支持切换击败状态的boss名；
+/npc clear <NPC名>，移除一个NPC；
+/npc unique，移除重复NPC；
+/npc relive，复活NPC（根据怪物图鉴记录）；
+/npc sm，sm召唤指令备注（SpawnMob npc召唤指令）；
 
 
-/worldinfo, 查看世界信息（分配 wm.worldinfo 权限后可用）；
-/bossinfo, 查看boss进度（分配 wm.bossinfo 权限后可用）；
-/relive, 复活入住过的NPC（分配 wm.relive 权限后可用）；
+/worldinfo，查看世界信息（分配 wm.worldinfo 权限后可用）；
+/bossinfo，查看boss进度（分配 wm.bossinfo 权限后可用）；
+/relive，复活入住过的NPC（分配 wm.relive 权限后可用）；
 ```
 
 <br/>
@@ -70,7 +70,7 @@
 
 <br/>
 
-## /moonphase, /moonstyle, 切换 月相和月亮样式 指令
+## /moonphase，/moonstyle，切换 月相和月亮样式 指令
 
 - 8种月相：满月、亏凸月、下弦、残月、新月、娥眉月、上弦月、盈凸月；
 
