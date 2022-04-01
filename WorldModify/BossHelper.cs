@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using TShockAPI;
 
@@ -12,7 +10,7 @@ namespace WorldModify
         public static void BossManage(CommandArgs args)
         {
             TSPlayer op = args.Player;
-            if(args.Parameters.Count<string>()==0 || args.Parameters[0].ToLowerInvariant()=="help")
+            if (args.Parameters.Count == 0 || args.Parameters[0].ToLowerInvariant() == "help")
             {
                 op.SendInfoMessage("/boss info, 查看boss进度");
                 op.SendInfoMessage("/boss sb, sb 召唤指令备注（SpawnBoss boss召唤指令）");
@@ -28,7 +26,7 @@ namespace WorldModify
                 default:
                     // 标记进度
                     bool isPass = ToggleBoss(op, param);
-                    if( !isPass )
+                    if (!isPass)
                         op.SendErrorMessage("语法不正确！");
                     break;
 
@@ -36,7 +34,7 @@ namespace WorldModify
                 // boss
                 case "sb":
                 case "spawn":
-                    string [] part1 = {
+                    string[] part1 = {
                         "\"king slime\" (史莱姆王)",
                         "\"eye of cthulhu\" (克苏鲁之眼)",
                         "deerclops (鹿角怪)",
@@ -47,7 +45,7 @@ namespace WorldModify
                         "\"wall of flesh\" (血肉墙)"
                     };
 
-                    string [] part2 = {
+                    string[] part2 = {
                         "\"queen slime\" (史莱姆皇后)",
                         "prime (机械骷髅王)",
                         "twins (双子魔眼)",
@@ -60,7 +58,7 @@ namespace WorldModify
                         "\"moon lord\" (月亮领主)"
                     };
 
-                    string [] part3 = {
+                    string[] part3 = {
                         "\"mourning wood\" (哀木)",
                         "pumpking (南瓜王)",
                         "everscream (常绿尖叫怪)",
@@ -75,9 +73,9 @@ namespace WorldModify
                         "\"stardust pillar\" (星尘柱)"
                     };
                     op.SendInfoMessage("以下是 boss 生成指令, sb = spawnboss：");
-                    op.SendInfoMessage("/sb " + String.Join(", /sb ", part1));
-                    op.SendInfoMessage("/sb " + String.Join(", /sb ", part2));
-                    op.SendInfoMessage("/sb " + String.Join(", /sb ", part3));
+                    op.SendInfoMessage("/sb " + string.Join(", /sb ", part1));
+                    op.SendInfoMessage("/sb " + string.Join(", /sb ", part2));
+                    op.SendInfoMessage("/sb " + string.Join(", /sb ", part3));
                     break;
 
 
@@ -94,10 +92,10 @@ namespace WorldModify
         /// </summary>
         private static bool ToggleBoss(TSPlayer op, string param)
         {
-            switch ( param )
+            switch (param)
             {
                 case "list":
-                    string [] li1 = {
+                    string[] li1 = {
                         "史莱姆王",
                         "克苏鲁之眼",
                         "鹿角怪",
@@ -108,7 +106,7 @@ namespace WorldModify
                         "血肉墙"
                     };
 
-                    string [] li2 = {
+                    string[] li2 = {
                         "毁灭者",
                         "双子魔眼",
                         "机械骷髅王",
@@ -121,7 +119,7 @@ namespace WorldModify
                         "月亮领主"
                     };
 
-                    string [] li3 = {
+                    string[] li3 = {
                         // "小丑",
                         "哥布林军队",
                         "海盗入侵",
@@ -138,9 +136,9 @@ namespace WorldModify
                     };
 
                     op.SendInfoMessage("支持切换的BOSS击败状态的有");
-                    op.SendInfoMessage("肉前：{0}", String.Join(", ", li1));
-                    op.SendInfoMessage("肉后：{0}", String.Join(", ", li2));
-                    op.SendInfoMessage("事件：{0}", String.Join(", ", li3));
+                    op.SendInfoMessage("肉前：{0}", string.Join(", ", li1));
+                    op.SendInfoMessage("肉后：{0}", string.Join(", ", li2));
+                    op.SendInfoMessage("事件：{0}", string.Join(", ", li3));
                     break;
 
                 // 史莱姆王
@@ -204,11 +202,11 @@ namespace WorldModify
                     NPC.downedBoss2 = !NPC.downedBoss2;
                     TSPlayer.All.SendData(PacketTypes.WorldInfo);
                     string boss2Name2 = "";
-                    if(Main.ActiveWorldFileData.HasCrimson && Main.ActiveWorldFileData.HasCorruption)
+                    if (Main.ActiveWorldFileData.HasCrimson && Main.ActiveWorldFileData.HasCorruption)
                         boss2Name2 = "世界吞噬怪 或 克苏鲁之脑";
-                    else if(Main.ActiveWorldFileData.HasCrimson)
+                    else if (Main.ActiveWorldFileData.HasCrimson)
                         boss2Name2 = "克苏鲁之脑";
-                    else if(Main.ActiveWorldFileData.HasCorruption)
+                    else if (Main.ActiveWorldFileData.HasCorruption)
                         boss2Name2 = "世界吞噬怪";
 
                     if (NPC.downedBoss1)
@@ -612,71 +610,71 @@ namespace WorldModify
             List<string> texts = ShowBossInfo();
             foreach (string text in texts)
             {
-                args.Player.SendInfoMessage( text );
+                args.Player.SendInfoMessage(text);
             }
         }
 
-        private static List<string> ShowBossInfo(bool isSuperAdmin=false)
+        private static List<string> ShowBossInfo(bool isSuperAdmin = false)
         {
             List<string> li = new List<string>();
             List<string> li1 = new List<string>();
             List<string> li2 = new List<string>();
             List<string> li3 = new List<string>();
 
-            li1.Add(utils.CFlag(NPC.downedSlimeKing, "史莱姆王") );
-            li1.Add(utils.CFlag(NPC.downedBoss1, "克苏鲁之眼") );
+            li1.Add(utils.CFlag(NPC.downedSlimeKing, "史莱姆王"));
+            li1.Add(utils.CFlag(NPC.downedBoss1, "克苏鲁之眼"));
 
             string boss2Name = "";
-            if(Main.drunkWorld)
+            if (Main.drunkWorld)
                 boss2Name = "世界吞噬怪 或 克苏鲁之脑";
             else
-                boss2Name = WorldGen.crimson ? "克苏鲁之脑":"世界吞噬怪";
+                boss2Name = WorldGen.crimson ? "克苏鲁之脑" : "世界吞噬怪";
             li1.Add(utils.CFlag(NPC.downedBoss2, boss2Name));
 
-            li1.Add(utils.CFlag(NPC.downedDeerclops , "鹿角怪") );
-            li1.Add(utils.CFlag(NPC.downedBoss3, "骷髅王") );
-            li1.Add(utils.CFlag(NPC.downedQueenBee, "蜂王") );
-            li1.Add(utils.CFlag(Main.hardMode, "血肉墙") );
+            li1.Add(utils.CFlag(NPC.downedDeerclops, "鹿角怪"));
+            li1.Add(utils.CFlag(NPC.downedBoss3, "骷髅王"));
+            li1.Add(utils.CFlag(NPC.downedQueenBee, "蜂王"));
+            li1.Add(utils.CFlag(Main.hardMode, "血肉墙"));
 
 
-            li2.Add(utils.CFlag(NPC.downedMechBoss1, "毁灭者") );
-            li2.Add(utils.CFlag(NPC.downedMechBoss2, "双子魔眼") );
-            li2.Add(utils.CFlag(NPC.downedMechBoss3, "机械骷髅王") );
+            li2.Add(utils.CFlag(NPC.downedMechBoss1, "毁灭者"));
+            li2.Add(utils.CFlag(NPC.downedMechBoss2, "双子魔眼"));
+            li2.Add(utils.CFlag(NPC.downedMechBoss3, "机械骷髅王"));
 
-            li2.Add(utils.CFlag(NPC.downedPlantBoss, "世纪之花") );
-            li2.Add(utils.CFlag(NPC.downedGolemBoss, "石巨人") );
+            li2.Add(utils.CFlag(NPC.downedPlantBoss, "世纪之花"));
+            li2.Add(utils.CFlag(NPC.downedGolemBoss, "石巨人"));
 
-            li2.Add(utils.CFlag(NPC.downedQueenSlime, "史莱姆皇后") );
-            li2.Add(utils.CFlag(NPC.downedEmpressOfLight, "光之女皇") );
+            li2.Add(utils.CFlag(NPC.downedQueenSlime, "史莱姆皇后"));
+            li2.Add(utils.CFlag(NPC.downedEmpressOfLight, "光之女皇"));
 
-            li2.Add(utils.CFlag(NPC.downedFishron, "猪龙鱼公爵") );
-            li2.Add(utils.CFlag(NPC.downedAncientCultist, "拜月教邪教徒") );
-            li2.Add(utils.CFlag(NPC.downedMoonlord, "月亮领主") );
+            li2.Add(utils.CFlag(NPC.downedFishron, "猪龙鱼公爵"));
+            li2.Add(utils.CFlag(NPC.downedAncientCultist, "拜月教邪教徒"));
+            li2.Add(utils.CFlag(NPC.downedMoonlord, "月亮领主"));
 
 
             // li3.Add(utils.CFlag(NPC.downedClown, "小丑") );
-            li3.Add(utils.CFlag(NPC.downedGoblins, "哥布林军队") );
-            li3.Add(utils.CFlag(NPC.downedPirates, "海盗入侵") );
-            li3.Add(utils.CFlag(NPC.downedMartians, "火星暴乱") );
+            li3.Add(utils.CFlag(NPC.downedGoblins, "哥布林军队"));
+            li3.Add(utils.CFlag(NPC.downedPirates, "海盗入侵"));
+            li3.Add(utils.CFlag(NPC.downedMartians, "火星暴乱"));
 
-            li3.Add(utils.CFlag(NPC.downedHalloweenTree, "哀木") );
-            li3.Add(utils.CFlag(NPC.downedHalloweenKing, "南瓜王") );
+            li3.Add(utils.CFlag(NPC.downedHalloweenTree, "哀木"));
+            li3.Add(utils.CFlag(NPC.downedHalloweenKing, "南瓜王"));
 
-            li3.Add(utils.CFlag(NPC.downedChristmasIceQueen, "冰雪女王") );
-            li3.Add(utils.CFlag(NPC.downedChristmasTree, "常绿尖叫怪") );
-            li3.Add(utils.CFlag(NPC.downedChristmasSantank, "圣诞坦克") );
+            li3.Add(utils.CFlag(NPC.downedChristmasIceQueen, "冰雪女王"));
+            li3.Add(utils.CFlag(NPC.downedChristmasTree, "常绿尖叫怪"));
+            li3.Add(utils.CFlag(NPC.downedChristmasSantank, "圣诞坦克"));
 
-            li3.Add(utils.CFlag(NPC.downedTowerSolar, "日耀柱") );
-            li3.Add(utils.CFlag(NPC.downedTowerVortex, "星旋柱") );
-            li3.Add(utils.CFlag(NPC.downedTowerNebula, "星云柱") );
-            li3.Add(utils.CFlag(NPC.downedTowerStardust, "星尘柱") );
+            li3.Add(utils.CFlag(NPC.downedTowerSolar, "日耀柱"));
+            li3.Add(utils.CFlag(NPC.downedTowerVortex, "星旋柱"));
+            li3.Add(utils.CFlag(NPC.downedTowerNebula, "星云柱"));
+            li3.Add(utils.CFlag(NPC.downedTowerStardust, "星尘柱"));
 
             return new List<string>(){
-                string.Format("肉前：{0}", String.Join(", ", li1)),
-                string.Format("肉后：{0}", String.Join(", ", li2)),
-                string.Format("事件：{0}", String.Join(", ", li3))
+                string.Format("肉前：{0}", string.Join(", ", li1)),
+                string.Format("肉后：{0}", string.Join(", ", li2)),
+                string.Format("事件：{0}", string.Join(", ", li3))
             };
         }
-        public static void Clear(){}
+        public static void Clear() { }
     }
 }

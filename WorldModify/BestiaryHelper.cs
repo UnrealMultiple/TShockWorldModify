@@ -23,31 +23,33 @@ namespace WorldModify
 
             foreach (string key in killedKeys)
             {
-                if ( Main.BestiaryTracker.Kills._killCountsByNpcId.ContainsKey(key))
+                if (Main.BestiaryTracker.Kills._killCountsByNpcId.ContainsKey(key))
                 {
-                    if ( Main.BestiaryTracker.Kills._killCountsByNpcId[key] < 50)
+                    if (Main.BestiaryTracker.Kills._killCountsByNpcId[key] < 50)
                         Main.BestiaryTracker.Kills._killCountsByNpcId[key] = 50;
-                } else {
+                }
+                else
+                {
                     Main.BestiaryTracker.Kills._killCountsByNpcId.Add(key, 50);
                 }
             }
 
             foreach (string key in sightKeys)
             {
-                if ( !Main.BestiaryTracker.Sights._wasNearPlayer.Contains(key))
+                if (!Main.BestiaryTracker.Sights._wasNearPlayer.Contains(key))
                     Main.BestiaryTracker.Sights._wasNearPlayer.Add(key);
             }
 
             foreach (string key in chatKeys)
             {
-                if ( !Main.BestiaryTracker.Chats._chattedWithPlayer.Contains(key))
+                if (!Main.BestiaryTracker.Chats._chattedWithPlayer.Contains(key))
                     Main.BestiaryTracker.Chats._chattedWithPlayer.Add(key);
             }
 
             TSPlayer.All.SendData(PacketTypes.WorldInfo);
             for (int i = 0; i < Main.maxPlayers; i++)
             {
-                if( Main.player[i].active )
+                if (Main.player[i].active)
                     Main.BestiaryTracker.OnPlayerJoining(i);
             }
         }
@@ -60,7 +62,7 @@ namespace WorldModify
 
             for (int i = 0; i < Main.maxPlayers; i++)
             {
-                if( Main.player[i].active )
+                if (Main.player[i].active)
                     Main.BestiaryTracker.OnPlayerJoining(i);
             }
         }

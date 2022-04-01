@@ -57,6 +57,7 @@
     <Compile Include="NPCHelper.cs" />
     <Compile Include="BestiaryHelper.cs" />
     <Compile Include="ResearchHelper.cs" />
+    <Compile Include="GenHelper.cs" />
     <Compile Include="utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

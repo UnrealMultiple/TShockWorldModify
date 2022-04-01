@@ -1,6 +1,18 @@
 
 
 # 更新日志
+## 20220401 (v1.3)
+- /npc info 会详细显示城镇NPC情况
+- /npc info <npc名> 可以查看npc数量及其所在坐标
+
+## 20220329 (v1.3)
+- 新增 /gen2 指令，用于重建世界；
+- 新增 /wm sundial 指令：
+    - /wm sundial <on|off> 开关附魔日晷；
+    - /wm sundial <天数> 设置附魔日晷冷却天数；
+- /wm mode 指令回归；
+- /wm info, 醉酒世界会显示当天的腐化类型；
+
 ## 20220325 (v1.3)
 - /wm mode 指令回归
   
@@ -16,14 +28,14 @@
 - /wm cave [深度]，查看/修改 洞穴深度；
 - /wm wind，查看 风速；
 - /wm bestiary, 解锁 怪物图鉴全收集；
-- /wm bestiary false,  重置 怪物图鉴；
+- /wm bestiary reset,  重置 怪物图鉴；
 
 
 增强
 - /wm help 显示内容支持分页显示；
 - /wm info 会额外显示更多信息：
   - 时间；
-  - 日晷（有状态才显示）；
+  - 附魔日晷（有状态才显示）；
   - 物品研究进度；
   - 怪物图鉴进度；
   - 出生点；
@@ -46,6 +58,7 @@
 /group addperm default wm.moonstyle
 /group addperm default wm.boss
 /group addperm default wm.npc
+/group addperm default wm.gen
 
 /group addperm default wm.relive
 /group addperm default wm.bossinfo

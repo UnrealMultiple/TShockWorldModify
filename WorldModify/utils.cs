@@ -2,13 +2,14 @@ using System;
 
 namespace WorldModify
 {
-    class utils{
+    class utils
+    {
         public static string CFlag(bool foo, string fstr)
         {
             if (foo)
-                    return $"[c/96FF96:✔{fstr}]";
-                else
-                    return $"-{fstr}";
+                return $"[c/96FF96:✔{fstr}]";
+            else
+                return $"-{fstr}";
         }
 
 
@@ -24,13 +25,14 @@ namespace WorldModify
 
             }
             if (gv != Guid.Empty)
-            {
                 return true;
-            }
             else
-            {
                 return false;
-            }
+        }
+
+        public static int GetUnixTimestamp
+        {
+            get { return (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds; }
         }
     }
 }
