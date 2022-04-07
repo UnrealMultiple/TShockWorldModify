@@ -1,6 +1,20 @@
 
 
 # 更新日志
+## 20220402 (v1.3)
+- /igen 指令，权限 wm.igen；
+    - /igen world <种子> [腐化] [大小] [彩蛋特性], 重建地图；
+    - /igen room <数量>，生成玻璃小房间（默认生成3个）；
+    - /igen pond，生成玻璃鱼池框架；
+    - /igen sm <w> <h>，盾构机；
+    - /igen dig <w> <h>，钻井机；
+    - /igen dirt，填土；
+    - /igen clear，清空世界；
+    - /igen info，（测试）当前物块信息；
+
+## 20220402 (v1.3)
+- /wm backup 备份地图
+
 ## 20220401 (v1.3)
 - /npc info 会详细显示城镇NPC情况
 - /npc info <npc名> 可以查看npc数量及其所在坐标

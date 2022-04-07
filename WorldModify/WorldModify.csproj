@@ -51,13 +51,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BackupHelper.cs" />
+    <Compile Include="RoomTheme.cs" />
     <Compile Include="WorldModify.cs" />
     <Compile Include="Compatible.cs" />
     <Compile Include="BossHelper.cs" />
     <Compile Include="NPCHelper.cs" />
     <Compile Include="BestiaryHelper.cs" />
     <Compile Include="ResearchHelper.cs" />
-    <Compile Include="GenHelper.cs" />
+    <Compile Include="ReGenHelper.cs" />
     <Compile Include="utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

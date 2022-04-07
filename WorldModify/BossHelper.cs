@@ -34,48 +34,7 @@ namespace WorldModify
                 // boss
                 case "sb":
                 case "spawn":
-                    string[] part1 = {
-                        "\"king slime\" (史莱姆王)",
-                        "\"eye of cthulhu\" (克苏鲁之眼)",
-                        "deerclops (鹿角怪)",
-                        "\"brain of cthulhu\" (克苏鲁之脑)",
-                        "\"eater of worlds\" (世界吞噬怪)",
-                        "\"queen bee\" (蜂王)",
-                        "skeletron (骷髅王)",
-                        "\"wall of flesh\" (血肉墙)"
-                    };
-
-                    string[] part2 = {
-                        "\"queen slime\" (史莱姆皇后)",
-                        "prime (机械骷髅王)",
-                        "twins (双子魔眼)",
-                        "destroyer (毁灭者)",
-                        "plantera (世纪之花)",
-                        "golem (石巨人)",
-                        "\"empress of light\" (光之女皇)",
-                        "\"duke fishron\" (猪龙鱼公爵)",
-                        "\"lunatic cultist\" (拜月教邪教徒)",
-                        "\"moon lord\" (月亮领主)"
-                    };
-
-                    string[] part3 = {
-                        "\"mourning wood\" (哀木)",
-                        "pumpking (南瓜王)",
-                        "everscream (常绿尖叫怪)",
-                        "\"ice queen\" (冰雪女王)",
-                        "santa (圣诞坦克)",
-                        "\"flying dutchman\" (荷兰飞盗船)",
-                        "\"martian saucer\" (火星飞碟)",
-                        "betsy (双足翼龙)",
-                        "\"solar pillar\" (日耀柱)",
-                        "\"vortex pillar\" (星旋柱)",
-                        "\"nebula pillar\" (星云柱)",
-                        "\"stardust pillar\" (星尘柱)"
-                    };
-                    op.SendInfoMessage("以下是 boss 生成指令, sb = spawnboss：");
-                    op.SendInfoMessage("/sb " + string.Join(", /sb ", part1));
-                    op.SendInfoMessage("/sb " + string.Join(", /sb ", part2));
-                    op.SendInfoMessage("/sb " + string.Join(", /sb ", part3));
+                    ShowSpawnTips(args);
                     break;
 
 
@@ -85,6 +44,98 @@ namespace WorldModify
                     break;
             }
 
+        }
+
+        private static void ShowSpawnTips(CommandArgs args)
+        {
+            TSPlayer op = args.Player;
+            if (!PaginationTools.TryParsePageNumber(args.Parameters, 1, op, out int pageNumber))
+                return;
+
+            List<string> lines = new List<string> {
+                "史莱姆王, {0}\"king slime\", {0}ks, {0}king",
+                "克苏鲁之眼, {0}\"eye of cthulhu\", {0}eoc, {0}eye",
+                "克苏鲁之脑, {0}\"brain of cthulhu\", {0}boc, {0}brain",
+                "世界吞噬怪, {0}\"eater of worlds\", {0}eow, {0}eater",
+
+                "蜂王, {0}\"queen bee\", {0}qb",
+                "骷髅王, {0}skeletron",
+                "鹿角怪, {0}deerclops",
+                "血肉墙, {0}\"wall of flesh\", {0}wof",
+                
+                "史莱姆皇后, {0}\"queen slime\", {0}qs",
+                "机械骷髅王, {0}prime",
+                "双子魔眼, {0}twins",
+                "毁灭者, {0}destroyer",
+                
+                "世纪之花, {0}plantera",
+                "石巨人, {0}golem",
+                "光之女皇, {0}\"empress of light\", {0}eol, {0}empress",
+                "猪龙鱼公爵, {0}\"duke fishron\", {0}duke, {0}fishron",
+                
+                "哀木, {0}\"mourning wood\"",
+                "南瓜王, {0}pumpking",
+                "常绿尖叫怪, {0}everscream",
+                "冰雪女王, {0}\"ice queen\"",
+                
+                "圣诞坦克, {0}santa",
+                "荷兰飞盗船, {0}\"flying dutchman\", {0}flying, {0}dutchman",
+                $"火星飞碟, {0}\"martian saucer\", {Commands.Specifier}sm 395",
+                "双足翼龙, {0}betsy",
+               
+                "日耀柱, {0}\"solar pillar\"",
+                "星旋柱, {0}\"vortex pillar\"",
+                "星云柱, {0}\"nebula pillar\"",
+                "星尘柱, {0}\"stardust pillar\"",
+
+                "拜月教邪教徒, {0}\"lunatic cultist\", {0}lc, {0}lunatic, {0}cultist",
+                "月亮领主, {0}\"moon lord\", {0}ml, {0}moon"
+            };
+
+            for(int i = 0; i < lines.Count; i++)
+            {
+                lines[i] = string.Format(lines[i],$"{Commands.Specifier}sb ");
+            }
+            PaginationTools.SendPage(
+                op, pageNumber, lines,
+                new PaginationTools.Settings
+                {
+                    HeaderFormat = Commands.Specifier + "spawnboss 指令 贴士 ({0}/{1})：",
+                    FooterFormat = "输入 {0}boss sb {{0}} 查看更多".SFormat(Commands.Specifier)
+                }
+            );
+
+            //string[] part2 = {
+            //            "\"queen slime\" (史莱姆皇后)",
+            //            "prime (机械骷髅王)",
+            //            "twins (双子魔眼)",
+            //            "destroyer (毁灭者)",
+            //            "plantera (世纪之花)",
+            //            "golem (石巨人)",
+            //            "\"empress of light\" (光之女皇)",
+            //            "\"duke fishron\" (猪龙鱼公爵)",
+            //            "\"lunatic cultist\" (拜月教邪教徒)",
+            //            "\"moon lord\" (月亮领主)"
+            //        };
+
+            //string[] part3 = {
+            //            "\"mourning wood\" (哀木)",
+            //            "pumpking (南瓜王)",
+            //            "everscream (常绿尖叫怪)",
+            //            "\"ice queen\" (冰雪女王)",
+            //            "santa (圣诞坦克)",
+            //            "\"flying dutchman\" (荷兰飞盗船)",
+            //            "\"martian saucer\" (火星飞碟)",
+            //            "betsy (双足翼龙)",
+            //            "\"solar pillar\" (日耀柱)",
+            //            "\"vortex pillar\" (星旋柱)",
+            //            "\"nebula pillar\" (星云柱)",
+            //            "\"stardust pillar\" (星尘柱)"
+            //        };
+            //op.SendInfoMessage("以下是 boss 生成指令, sb = spawnboss：");
+            //op.SendInfoMessage("/sb " + string.Join(", /sb ", part1));
+            //op.SendInfoMessage("/sb " + string.Join(", /sb ", part2));
+            //op.SendInfoMessage("/sb " + string.Join(", /sb ", part3));
         }
 
         /// <summary>
