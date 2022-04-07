@@ -32,16 +32,16 @@ namespace WorldModify
 
         public override void Initialize()
         {
-            Commands.ChatCommands.Add(new Command(new List<string>() { "wm.use" }, WMCommand, "worldmodify", "wm") { HelpText = "简易的世界修改器" });
-            Commands.ChatCommands.Add(new Command(new List<string>() { "wm.moon" }, ChangeMoonPhase, "moonphase", "moon") { HelpText = "月相管理" });
-            Commands.ChatCommands.Add(new Command(new List<string>() { "wm.moonstyle" }, ChangeMoonStyle, "moonstyle", "ms") { HelpText = "月亮样式管理" });
-            Commands.ChatCommands.Add(new Command(new List<string>() { "wm.boss" }, BossHelper.BossManage, "bossmanage", "boss") { HelpText = "boss管理" });
-            Commands.ChatCommands.Add(new Command(new List<string>() { "wm.npc" }, NPCHelper.NPCManage, "npcmanage", "npc") { HelpText = "npc管理" });
-            Commands.ChatCommands.Add(new Command(new List<string>() { "wm.igen" }, ReGenHelper.iGen, "igen") { HelpText = "建造世界" });
+            Commands.ChatCommands.Add(new Command(new List<string>() { "worldmodify" }, WMCommand, "worldmodify", "wm") { HelpText = "简易的世界修改器" });
+            Commands.ChatCommands.Add(new Command(new List<string>() { "moonphase" }, ChangeMoonPhase, "moonphase", "moon") { HelpText = "月相管理" });
+            Commands.ChatCommands.Add(new Command(new List<string>() { "moonstyle" }, ChangeMoonStyle, "moonstyle", "ms") { HelpText = "月亮样式管理" });
+            Commands.ChatCommands.Add(new Command(new List<string>() { "bossmanage" }, BossHelper.BossManage, "bossmanage", "boss") { HelpText = "boss管理" });
+            Commands.ChatCommands.Add(new Command(new List<string>() { "npcmanage" }, NPCHelper.NPCManage, "npcmanage", "npc") { HelpText = "npc管理" });
+            Commands.ChatCommands.Add(new Command(new List<string>() { "igen" }, ReGenHelper.iGen, "igen") { HelpText = "建造世界" });
 
-            Commands.ChatCommands.Add(new Command(new List<string>() { "wm.relive" }, NPCHelper.Relive, "relive") { HelpText = "复活NPC" });
-            Commands.ChatCommands.Add(new Command(new List<string>() { "wm.bossinfo" }, BossHelper.BossInfo, "bossinfo", "bi") { HelpText = "boss进度信息" });
-            Commands.ChatCommands.Add(new Command(new List<string>() { "wm.worldinfo" }, WorldInfo, "worldinfo", "wi") { HelpText = "世界信息" });
+            Commands.ChatCommands.Add(new Command(new List<string>() { "relive" }, NPCHelper.Relive, "relive") { HelpText = "复活NPC" });
+            Commands.ChatCommands.Add(new Command(new List<string>() { "bossinfo" }, BossHelper.BossInfo, "bossinfo", "bi") { HelpText = "boss进度信息" });
+            Commands.ChatCommands.Add(new Command(new List<string>() { "worldinfo" }, WorldInfo, "worldinfo", "wi") { HelpText = "世界信息" });
 
             BackupHelper.BackupPath = Path.Combine(SaveDir, "backups");
         }

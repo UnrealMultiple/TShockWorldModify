@@ -11,8 +11,9 @@ namespace WorldModify
 {
     class NPCHelper
     {
+        #region NPC管理
         /// <summary>
-        /// npc 管理
+        /// NPC 管理
         /// </summary>
         public static void NPCManage(CommandArgs args)
         {
@@ -24,9 +25,9 @@ namespace WorldModify
                 op.SendInfoMessage("/npc list, 查看支持切换解救状态的NPC名");
                 op.SendInfoMessage("/npc clear <NPC名>, 移除一个NPC");
                 op.SendInfoMessage("/npc unique, NPC去重");
-                op.SendInfoMessage("/npc tphere <npc名>, 将npc tp到你旁边");
+                op.SendInfoMessage("/npc tphere <NPC名|town>, 将NPC传送到你身边");
                 op.SendInfoMessage("/npc relive, 复活NPC（根据怪物图鉴记录）");
-                op.SendInfoMessage("/npc sm, sm召唤指令备注（SpawnMob npc召唤指令）");
+                op.SendInfoMessage("/npc sm, sm召唤指令备注（SpawnMob NPC召唤指令）");
                 return;
             }
 
@@ -47,19 +48,18 @@ namespace WorldModify
                     {
                         newStrs.Add(string.Format("/sm {0} ({1})", _NPCTypes[names[i]], names[i]));
                     }
-                    op.SendInfoMessage("以下是 npc 生成指令, sm = spawnmob：");
+                    op.SendInfoMessage("以下是NPC生成指令, sm = spawnmob：");
                     op.SendInfoMessage(string.Join(", ", newStrs));
                     break;
-
 
                 // 查看npc解救情况
                 case "info": NPCInfo(args); break;
 
-                // 传到npc身边
-                case "tp": TPNPC(args); break;
-
                 // 将npc传到你身边
-                case "tphere": TPHereNPC(args); break;
+                case "tphere":
+                case "th":
+                    TPHereNPC(args);
+                    break;
 
                 // 移除一个npc
                 case "clear": ClearNPC(args); break;
@@ -71,14 +71,15 @@ namespace WorldModify
                 case "relive": Relive(args); break;
             }
         }
+        #endregion
+
+        #region NPC信息
         /// <summary>
         /// NPC信息
         /// </summary>
         private static void NPCInfo(CommandArgs args)
         {
             TSPlayer op = args.Player;
-
-
             if (args.Parameters.Count == 1)
             {
                 List<string> li1 = new List<string>();
@@ -107,7 +108,6 @@ namespace WorldModify
                             townTotal++;
                     }
                 }
-
 
                 li1.Add(utils.CFlag(npcIds.Contains(22), "向导"));
                 li1.Add(utils.CFlag(npcIds.Contains(17), "商人"));
@@ -246,12 +246,12 @@ namespace WorldModify
                     }
                 }
             }
-
-
         }
+        #endregion
 
+        #region 切换NPC解救状态
         /// <summary>
-        /// 切换npc解救状态
+        /// 切换NPC解救状态
         /// </summary>
         private static bool ToggleNPC(TSPlayer op, string param)
         {
@@ -429,8 +429,9 @@ namespace WorldModify
             }
             return true;
         }
+        #endregion
 
-
+        #region 清理NPC
         /// <summary>
         /// 清理NPC
         /// </summary>
@@ -464,7 +465,9 @@ namespace WorldModify
                     break;
             }
         }
+        #endregion
 
+        #region NPC去重
         /// <summary>
         // NPC去重
         /// <summary>
@@ -501,9 +504,11 @@ namespace WorldModify
             else
                 args.Player.SendInfoMessage("没有可清除的 重复的NPC");
         }
+        #endregion
 
+        #region 复活NPC
         /// <summary>
-        // NPC重生
+        // 复活NPC
         /// <summary>
         public static void Relive(CommandArgs args)
         {
@@ -626,82 +631,72 @@ namespace WorldModify
         {
             return Main.BestiaryDB.FindEntryByNPCID(npcId).UIInfoProvider.GetEntryUICollectionInfo().UnlockState > BestiaryEntryUnlockState.NotKnownAtAll_0;
         }
+        #endregion
 
-        public static void TPNPC(CommandArgs args)
-        {
-            TSPlayer op = args.Player;
-            if (args.Parameters.Count == 1)
-            {
-                op.SendInfoMessage("语法不正确，输入 /npc tp <NPC名>, tp到指定NPC旁边");
-                return;
-            }
-
-            switch (args.Parameters[1].ToLowerInvariant())
-            {
-                case "help":
-                    op.SendInfoMessage("语法不正确，输入 /npc tp <NPC名>, tp到指定NPC旁边");
-                    break;
-
-                default:
-                    var npcs = TShock.Utils.GetNPCByIdOrName(args.Parameters[1]);
-                    if (npcs.Count == 0)
-                        op.SendErrorMessage("找不到对应的 NPC");
-                    else if (npcs.Count > 1)
-                        op.SendMultipleMatchError(npcs.Select(n => $"{n.FullName}({n.type})"));
-                    else
-                    {
-                        op.Teleport(npcs[0].position.X, npcs[0].position.Y);
-                        Console.WriteLine($"op:{op.TPlayer.position.X}|{op.TPlayer.position.Y}");
-                        Console.WriteLine($"npc:{npcs[0].position.X}|{npcs[0].position.Y}");
-                        op.SendSuccessMessage("已传送至 '{0}'", npcs[0].FullName);
-                    }
-                    break;
-            }
-        }
-
+        #region 将NPC传送到你身边
+        /// <summary>
+        /// 将NPC传送到你身边
+        /// </summary>
+        /// <param name="args"></param>
         public static void TPHereNPC(CommandArgs args)
         {
             TSPlayer op = args.Player;
             if (args.Parameters.Count == 1)
             {
-                op.SendInfoMessage("语法不正确，输入 /npc tphere <NPC名>, 将指定NPC传到你旁边");
+                op.SendInfoMessage("语法不正确，输入 /npc tphere <NPC名>, 将指定NPC传到你身边");
                 return;
             }
 
             switch (args.Parameters[1].ToLowerInvariant())
             {
                 case "help":
-                    op.SendInfoMessage("语法不正确，输入 /npc tphere <NPC名>, 将指定NPC传到你旁边");
+                    op.SendInfoMessage("语法不正确，输入 /npc tphere <NPC名>, 将指定NPC传到你身边");
                     break;
 
                 default:
-                    int index = -1;
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    if (args.Parameters[1].ToLowerInvariant() == "town")
                     {
-                        //Console.WriteLine($"FullName:{Main.npc[i].FullName} TypeName:{Main.npc[i].TypeName}");
-                        if (Main.npc[i].active && Main.npc[i].TypeName == args.Parameters[1])
+                        for (int i = 0; i < Main.maxNPCs; i++)
                         {
-                            index = i;
-                            break;
+                            NPC npc = Main.npc[i];
+                            if (npc.active && npc.townNPC && npc.netID != 453 && npc.netID != 368 && npc.netID != 37)
+                            {
+                                Vector2 newPos = new Vector2(op.TPlayer.position.X, op.TPlayer.position.Y);
+                                npc.Teleport(newPos);
+                            }
                         }
-                    }
-                    if (index == -1)
-                    {
-                        op.SendErrorMessage("找不到对应的 NPC");
+                        op.SendSuccessMessage("已将所有城镇NPC传到你身边");
                     }
                     else
                     {
-                        NPC npc = Main.npc[index];
-                        Vector2 newPos = new Vector2(op.TPlayer.position.X, op.TPlayer.position.Y);
-                        Console.WriteLine($"op:{op.TPlayer.position.X}|{op.TPlayer.position.Y}");
-                        Console.WriteLine($"npc:{npc.position.X}|{npc.position.Y}");
-                        npc.Teleport(newPos);
-                        op.SendSuccessMessage("已将 '{0}' 传到你身边", npc.FullName);
+                        int index = -1;
+                        for (int i = 0; i < Main.maxNPCs; i++)
+                        {
+                            //Console.WriteLine($"FullName:{Main.npc[i].FullName} TypeName:{Main.npc[i].TypeName}");
+                            if (Main.npc[i].active && Main.npc[i].TypeName == args.Parameters[1])
+                            {
+                                index = i;
+                                break;
+                            }
+                        }
+                        if (index == -1)
+                        {
+                            op.SendErrorMessage("找不到对应的 NPC");
+                        }
+                        else
+                        {
+                            NPC npc = Main.npc[index];
+                            Vector2 newPos = new Vector2(op.TPlayer.position.X, op.TPlayer.position.Y);
+                            npc.Teleport(newPos);
+                            op.SendSuccessMessage("已将 {0} 传到你身边", npc.FullName);
+                        }
                     }
                     break;
             }
         }
+        #endregion
 
+        #region 一些方法
         /// <summary>
         /// 清理指定id的NPC
         /// </summary>
@@ -813,6 +808,7 @@ namespace WorldModify
         {
             _NPCTypes.Clear();
         }
+        #endregion
 
     }
 }

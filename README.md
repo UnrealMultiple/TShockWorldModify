@@ -8,8 +8,8 @@
 /wm mode [1~4/经典/专家/大师/旅行]，查看/修改 世界难度；
 /wm seed [种子]，查看/修改 世界种子；
 
-/wm 0516，开启/关闭 05162020 秘密世界；
-/wm 05162021，开启/关闭 05162021 秘密世界；
+/wm 2020，开启/关闭 05162020 秘密世界；
+/wm 2021，开启/关闭 05162021 秘密世界；
 /wm ftw，开启/关闭 for the worthy 秘密世界；
 /wm ntb，开启/关闭 not the bees 秘密世界（1.4.0.5无此选项）；
 /wm dst，开启/关闭 the constant 秘密世界（1.4.0.5无此选项）；
@@ -25,30 +25,39 @@
 /wm wind，查看 风速；
 
 
-/moon <月相>，修改月相（分配 wm.moon 权限后可用，超管拥有全部权限，无需授权）；
-/moonstyle <月亮样式>，修改月亮样式（分配 wm.moonstyle 权限后可用）；
+/moon <月相>，修改月相；
+/moonstyle <月亮样式>，修改月亮样式；
 
 
-/boss help，boss管理（分配 wm.boss 权限后可用）；
+/boss help，boss管理；
 /boss info，查看boss进度；
 /boss <boss名>，切换boss击败状态；
 /boss list，查看支持切换击败状态的boss名；
 /boss sb，sb 召唤指令备注；
 
 
-/npc help，npc管理（分配 wm.npc 权限后可用）；
+/npc help，npc管理；
 /npc info，查看npc解救情况；
 /npc <解救npc名 或 猫/狗/兔 >，切换NPC解救状态；
 /npc list，查看支持切换击败状态的boss名；
 /npc clear <NPC名>，移除一个NPC；
 /npc unique，移除重复NPC；
+/npc tphere <NPC名|town>, 将NPC传送到你身边；
 /npc relive，复活NPC（根据怪物图鉴记录）；
 /npc sm，sm召唤指令备注（SpawnMob npc召唤指令）；
 
 
-/worldinfo，查看世界信息（分配 wm.worldinfo 权限后可用）；
-/bossinfo，查看boss进度（分配 wm.bossinfo 权限后可用）；
-/relive，复活入住过的NPC（分配 wm.relive 权限后可用）；
+/igen world [种子] [腐化] [大小] [彩蛋特性], 重建地图；
+/igen room <数量>，生成玻璃小房间（默认生成3个）"；
+/igen pond，生成玻璃鱼池框架"；
+/igen sm <w> <h>，盾构机（默认清空前方宽100高10区域，且生成一条石平台）；
+/igen dig <w> <h>，钻井机（默认在脚下清空宽3高100区域，脚下生成一条石平台和生成一条丝绸绳索）；
+/igen dirt，填土（一个屏幕范围内，脚下部分填充土块，上面的部分会被清空）；
+
+
+/worldinfo，查看世界信息（分配 worldinfo 权限后可用）；
+/bossinfo，查看boss进度（分配 bossinfo 权限后可用）；
+/relive，复活入住过的NPC（分配 relive 权限后可用）；
 ```
 
 <br/>
@@ -58,15 +67,15 @@
 普通用户使用需分配权限
 
 ```bash
-/group addperm default wm.use
-/group addperm default wm.moon
-/group addperm default wm.moonstyle
-/group addperm default wm.boss
-/group addperm default wm.npc
+/group addperm default bossinfo
+/group addperm default worldinfo
+/group addperm default relive
 
-/group addperm default wm.relive
-/group addperm default wm.bossinfo
-/group addperm default wm.worldinfo
+/group addperm default worldmodify
+/group addperm default moonphase
+/group addperm default moonstyle
+/group addperm default bossmanage
+/group addperm default npcmanage
 ```
 
 <br/>
