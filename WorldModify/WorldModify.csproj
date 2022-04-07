@@ -54,7 +54,6 @@
     <Compile Include="BackupHelper.cs" />
     <Compile Include="RoomTheme.cs" />
     <Compile Include="WorldModify.cs" />
-    <Compile Include="Compatible.cs" />
     <Compile Include="BossHelper.cs" />
     <Compile Include="NPCHelper.cs" />
     <Compile Include="BestiaryHelper.cs" />
