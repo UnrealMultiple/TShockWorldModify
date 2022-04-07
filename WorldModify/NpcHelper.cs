@@ -481,8 +481,7 @@ namespace WorldModify
                 if (!Main.npc[i].active)
                     continue;
 
-                // 453骷髅商人
-                if (!Main.npc[i].townNPC && Main.npc[i].type != 453)
+                if (!Main.npc[i].townNPC )
                     continue;
 
                 int num = Main.npc[i].type;
@@ -654,18 +653,25 @@ namespace WorldModify
                     break;
 
                 default:
+                    Vector2 newPos;
+                    if (op.RealPlayer)
+                        newPos = new Vector2(op.TPlayer.position.X, op.TPlayer.position.Y);
+                    else
+                        newPos = new Vector2(Main.spawnTileX * 16, Main.spawnTileY * 16);
+
                     if (args.Parameters[1].ToLowerInvariant() == "town")
                     {
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             NPC npc = Main.npc[i];
                             if (npc.active && npc.townNPC && npc.netID != 453 && npc.netID != 368 && npc.netID != 37)
-                            {
-                                Vector2 newPos = new Vector2(op.TPlayer.position.X, op.TPlayer.position.Y);
                                 npc.Teleport(newPos);
-                            }
                         }
-                        op.SendSuccessMessage("已将所有城镇NPC传到你身边");
+
+                        if (op.RealPlayer)
+                            op.SendSuccessMessage("已将所有城镇NPC传到你身边");
+                        else
+                            op.SendSuccessMessage("已将所有城镇NPC传回出生点");
                     }
                     else
                     {
@@ -685,10 +691,14 @@ namespace WorldModify
                         }
                         else
                         {
+                            
                             NPC npc = Main.npc[index];
-                            Vector2 newPos = new Vector2(op.TPlayer.position.X, op.TPlayer.position.Y);
                             npc.Teleport(newPos);
-                            op.SendSuccessMessage("已将 {0} 传到你身边", npc.FullName);
+
+                            if (op.RealPlayer)
+                                op.SendSuccessMessage("已将 {0} 传到你身边", npc.FullName);
+                            else
+                                op.SendSuccessMessage("已将 {0} 传回出生点", npc.FullName);
                         }
                     }
                     break;

@@ -348,7 +348,7 @@ namespace WorldModify
 
                 // 风速
                 case "wind":
-                    op.SendInfoMessage($"风速：{Main.windSpeedCurrent}\n，输入 /wind <速度> 可调节风速");
+                    op.SendInfoMessage($"风速：{Main.windSpeedCurrent}\n输入 /wind <速度> 可调节风速");
                     break;
 
                 #region 秘密世界
@@ -549,7 +549,7 @@ namespace WorldModify
                 lines.Add($"月亮样式: {_moonTypes.Keys.ElementAt(Main.moonType)}");
 
                 string percent;
-                if (TShock.ServerSideCharacterConfig.Settings.Enabled)
+                if (TShock.ServerSideCharacterConfig.Settings.Enabled && Main.GameMode==3)
                 {
                     int num1 = ResearchHelper.GetSacrificeCompleted();
                     int num2 = ResearchHelper.GetSacrificeTotal();
@@ -774,7 +774,7 @@ namespace WorldModify
                     text = $"{text} {text2}";
             }
             if (!string.IsNullOrEmpty(text))
-                return $"附魔日晷：{text}2";
+                return $"附魔日晷：{text}";
             else
                 return "";
         }

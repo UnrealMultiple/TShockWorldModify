@@ -23,8 +23,6 @@ namespace WorldModify
                 op.SendInfoMessage("/igen sm <w> <h>，盾构机");
                 op.SendInfoMessage("/igen dig <w> <h>，钻井机");
                 op.SendInfoMessage("/igen dirt，填土");
-                op.SendInfoMessage("/igen clear，（测试）清空世界");
-                op.SendInfoMessage("/igen info，（测试）当前物块信息");
                 return;
             }
 
@@ -573,7 +571,7 @@ namespace WorldModify
         {
             int Width = Math.Max(3, w);
             int height = Math.Max(3, h);
-            int Xstart = posX - (Width / 2);
+            int Xstart = posX - (Width / 2) + 1;
             int Ystart = posY;
 
             Parallel.For(Xstart, Xstart + Width, (cx) =>
@@ -583,7 +581,7 @@ namespace WorldModify
                     if (Main.tile[cx, cy].active())
                         WorldGen.KillTile(cx, cy, false, false, true);
 
-                    if (cx == posX)
+                    if (cx == Xstart + Width / 2)
                     {
                         Main.tile[cx, cy].type = TileID.SilkRope;
                         Main.tile[cx, cy].active(true);

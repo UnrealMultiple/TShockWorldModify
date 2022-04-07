@@ -29,7 +29,7 @@ namespace WorldModify
                 string worldname = Main.worldPathName;
                 string name = Path.GetFileName(worldname);
 
-                Main.ActiveWorldFileData._path = Path.Combine(BackupPath, string.Format("{0}.{1:yyyy-MM-dd HH.mm.ss}.bak", name, DateTime.Now));
+                Main.ActiveWorldFileData._path = Path.Combine(BackupPath, string.Format("{0}.{1:yyyy-MM-dd_HH.mm.ss}.bak", name, DateTime.Now));
 
                 string worldpath = Path.GetDirectoryName(Main.worldPathName);
                 if (worldpath != null && !Directory.Exists(worldpath))

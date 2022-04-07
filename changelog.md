@@ -66,18 +66,6 @@
 - /wm info 和 /wi 不再显示 boss进度；
 - /wm info 不再显示 世界id；
 - /relivenpc 简写成 /relive；
-- 权限调整，新的权限：
-```bash
-/group addperm default wm.use
-/group addperm default wm.moon
-/group addperm default wm.moonstyle
-/group addperm default wm.boss
-/group addperm default wm.npc
-/group addperm default wm.gen
-
-/group addperm default wm.relive
-/group addperm default wm.bossinfo
-/group addperm default wm.worldinfo
 ```
 
 
