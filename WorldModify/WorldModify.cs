@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
@@ -22,6 +23,9 @@ namespace WorldModify
 
         public override Version Version => Assembly.GetExecutingAssembly().GetName().Version;
 
+        public static readonly string SaveDir = Path.Combine(TShock.SavePath, "WorldModify");
+        //private static readonly string SaveFile = Path.Combine(SaveDir, "config.json");
+
         public WorldModify(Main game) : base(game)
         {
         }
@@ -33,11 +37,13 @@ namespace WorldModify
             Commands.ChatCommands.Add(new Command(new List<string>() { "wm.moonstyle" }, ChangeMoonStyle, "moonstyle", "ms") { HelpText = "月亮样式管理" });
             Commands.ChatCommands.Add(new Command(new List<string>() { "wm.boss" }, BossHelper.BossManage, "bossmanage", "boss") { HelpText = "boss管理" });
             Commands.ChatCommands.Add(new Command(new List<string>() { "wm.npc" }, NPCHelper.NPCManage, "npcmanage", "npc") { HelpText = "npc管理" });
-            Commands.ChatCommands.Add(new Command(new List<string>() { "wm.gen" }, GenHelper.Gen2, "gen2") { HelpText = "重建世界" });
+            Commands.ChatCommands.Add(new Command(new List<string>() { "wm.igen" }, ReGenHelper.iGen, "igen") { HelpText = "建造世界" });
 
             Commands.ChatCommands.Add(new Command(new List<string>() { "wm.relive" }, NPCHelper.Relive, "relive") { HelpText = "复活NPC" });
             Commands.ChatCommands.Add(new Command(new List<string>() { "wm.bossinfo" }, BossHelper.BossInfo, "bossinfo", "bi") { HelpText = "boss进度信息" });
             Commands.ChatCommands.Add(new Command(new List<string>() { "wm.worldinfo" }, WorldInfo, "worldinfo", "wi") { HelpText = "世界信息" });
+
+            BackupHelper.BackupPath = Path.Combine(SaveDir, "backups");
         }
 
 
@@ -74,12 +80,13 @@ namespace WorldModify
                     "/wm wind，查看 风速",
                     "/wm research，解锁 全物品研究",
                     "/wm bestiary [reset]，解锁/重置 怪物图鉴全收集",
-                    "/moon help，月相管理",
+                    "/wm backup，备份地图",
 
+                    "/moon help，月相管理",
                     "/moonstyle help，月亮样式管理",
                     "/boss help，boss管理",
                     "/npc help，npc管理",
-                    "/gen2 help，重建世界"
+                    "/igen help，建造世界"
                 };
 
                 PaginationTools.SendPage(
@@ -210,16 +217,26 @@ namespace WorldModify
                     }
 
                     string uuid = args.Parameters[1].ToLower();
-                    if (utils.ToGuid(uuid))
+                    if( uuid=="new")
                     {
-                        Main.ActiveWorldFileData.UniqueId = new Guid(uuid);
+                        Main.ActiveWorldFileData.UniqueId = Guid.NewGuid();
                         TSPlayer.All.SendData(PacketTypes.WorldInfo);
-                        op.SendSuccessMessage("世界的UUID已改成 {0}", uuid);
+                        op.SendSuccessMessage("世界的UUID已改成 {0}", Main.ActiveWorldFileData.UniqueId);
                     }
                     else
                     {
-                        op.SendErrorMessage("uuid格式不正确！");
+                        if (utils.ToGuid(uuid))
+                        {
+                            Main.ActiveWorldFileData.UniqueId = new Guid(uuid);
+                            TSPlayer.All.SendData(PacketTypes.WorldInfo);
+                            op.SendSuccessMessage("世界的UUID已改成 {0}", uuid);
+                        }
+                        else
+                        {
+                            op.SendErrorMessage("uuid格式不正确！");
+                        }
                     }
+
                     break;
 
 
@@ -464,6 +481,12 @@ namespace WorldModify
                             op.SendInfoMessage(text);
                     }
                     break;
+
+                // 备份
+                case "backup":
+                    BackupHelper.Backup(op);
+                    break;
+
 
             }
         }

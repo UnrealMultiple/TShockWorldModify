@@ -675,18 +675,27 @@ namespace WorldModify
                     break;
 
                 default:
-                    var npcs = TShock.Utils.GetNPCByIdOrName(args.Parameters[1]);
-                    if (npcs.Count == 0)
+                    int index = -1;
+                    for (int i = 0; i < Main.maxNPCs; i++)
+                    {
+                        if (Main.npc[i].active && Main.npc[i].FullName == args.Parameters[1])
+                        {
+                            index = i;
+                            break;
+                        }
+                    }
+                    if (index == -1)
+                    {
                         op.SendErrorMessage("找不到对应的 NPC");
-                    else if (npcs.Count > 1)
-                        op.SendMultipleMatchError(npcs.Select(n => $"{n.FullName}({n.type})"));
+                    }
                     else
                     {
+                        NPC npc = Main.npc[index];
                         Vector2 newPos = new Vector2(op.TPlayer.position.X, op.TPlayer.position.Y);
                         Console.WriteLine($"op:{op.TPlayer.position.X}|{op.TPlayer.position.Y}");
-                        Console.WriteLine($"npc:{npcs[0].position.X}|{npcs[0].position.Y}");
-                        npcs[0].Teleport(newPos);
-                        op.SendSuccessMessage("已将 '{0}' 传到你身边", npcs[0].FullName);
+                        Console.WriteLine($"npc:{npc.position.X}|{npc.position.Y}");
+                        npc.Teleport(newPos);
+                        op.SendSuccessMessage("已将 '{0}' 传到你身边", npc.FullName);
                     }
                     break;
             }
