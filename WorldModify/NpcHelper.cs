@@ -678,7 +678,8 @@ namespace WorldModify
                     int index = -1;
                     for (int i = 0; i < Main.maxNPCs; i++)
                     {
-                        if (Main.npc[i].active && Main.npc[i].FullName == args.Parameters[1])
+                        //Console.WriteLine($"FullName:{Main.npc[i].FullName} TypeName:{Main.npc[i].TypeName}");
+                        if (Main.npc[i].active && Main.npc[i].TypeName == args.Parameters[1])
                         {
                             index = i;
                             break;
