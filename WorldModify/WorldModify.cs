@@ -255,9 +255,9 @@ namespace WorldModify
                     switch (args.Parameters[1].ToLowerInvariant())
                     {
                         case "on":
-                            if (!Main.fastForwardTime)
+                            if (!Main.fastForwardTimeToDawn)
                             {
-                                Main.fastForwardTime = true;
+                                Main.fastForwardTimeToDawn = true;
                                 TSPlayer.All.SendData(PacketTypes.WorldInfo);
                                 op.SendSuccessMessage("附魔日晷 已开启");
                             } else
@@ -266,9 +266,9 @@ namespace WorldModify
                             }
                             break;
                         case "off":
-                            if (Main.fastForwardTime)
+                            if (Main.fastForwardTimeToDawn)
                             {
-                                Main.fastForwardTime = false;
+                                Main.fastForwardTimeToDawn = false;
                                 TSPlayer.All.SendData(PacketTypes.WorldInfo);
                                 op.SendSuccessMessage("附魔日晷已关闭");
                             }
@@ -764,7 +764,7 @@ namespace WorldModify
         private string GetSundial()
         {
             // 附魔日晷
-            string text = Main.fastForwardTime ? "生效中" : "";
+            string text = Main.fastForwardTimeToDawn ? "生效中" : "";
             string text2 = Main.sundialCooldown > 0 ? $"{Main.sundialCooldown}天后可再次使用" : "";
             if (string.IsNullOrEmpty(text))
                 text = text2;
