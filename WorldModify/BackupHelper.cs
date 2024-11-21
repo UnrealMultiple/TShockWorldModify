@@ -9,16 +9,18 @@ namespace WorldModify
 {
     public class BackupHelper
     {
-        public static string BackupPath { get; set; }
+        public static string BackupPath { get; set; } = string.Empty;
 
 
         public static void Backup(TSPlayer op)
         {
-            Thread t = new Thread(() =>
+            Thread t = new(() =>
             {
                 DoBackup(op);
-            });
-            t.Name = "[wm]Backup Thread";
+            })
+            {
+                Name = "[wm]Backup Thread"
+            };
             t.Start();
         }
 
@@ -31,7 +33,7 @@ namespace WorldModify
 
                 Main.ActiveWorldFileData._path = Path.Combine(BackupPath, string.Format("{0}.{1:yyyy-MM-dd_HH.mm.ss}.bak", name, DateTime.Now));
 
-                string worldpath = Path.GetDirectoryName(Main.worldPathName);
+                string? worldpath = Path.GetDirectoryName(Main.worldPathName);
                 if (worldpath != null && !Directory.Exists(worldpath))
                     Directory.CreateDirectory(worldpath);
 

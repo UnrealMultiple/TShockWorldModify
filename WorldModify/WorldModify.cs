@@ -21,7 +21,7 @@ namespace WorldModify
 
         public override string Name => "WorldModify";
 
-        public override Version Version => Assembly.GetExecutingAssembly().GetName().Version;
+        public override Version Version => Assembly.GetExecutingAssembly().GetName().Version!;
 
         public static readonly string SaveDir = Path.Combine(TShock.SavePath, "WorldModify");
         //private static readonly string SaveFile = Path.Combine(SaveDir, "config.json");
