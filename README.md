@@ -1,6 +1,6 @@
 # WorldModify 简易的世界修改器
 
-- 作者: hufang360/TShockWorldModify
+- 作者: hufang360
 - 出处: [hufang360/TShockWorldModify](https://github.com/hufang360/TShockWorldModify)
 - 一个功能完整的世界修改器
 
