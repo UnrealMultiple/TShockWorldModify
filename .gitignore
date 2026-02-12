@@ -6,6 +6,7 @@
 OTAPI.dll
 TerrariaServer.exe
 TShockAPI.dll
+[Ll]ocal/
 
 # User-specific files
 *.suo
@@ -145,7 +146,7 @@ DocProject/Help/Html2
 DocProject/Help/html
 
 # Click-Once directory
-publish/
+[Pp]ublish/
 
 # Publish Web Output
 *.[Pp]ublish.xml
